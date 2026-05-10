@@ -1,0 +1,49 @@
+:root {
+    --primary-teal: #00bfa5;
+    --bg-dark: #0f172a;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Assistant', sans-serif; direction: rtl; color: var(--text-main); }
+
+/* Navbar */
+.navbar { display: flex; justify-content: space-between; padding: 20px 8%; align-items: center; border-bottom: 1px solid #f1f5f9; background: #fff; }
+.btn-filled { background: var(--primary-teal); color: white; padding: 8px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; }
+.btn-text { text-decoration: none; color: var(--text-main); margin-left: 15px; }
+
+/* התיקון למרכוז החלק העליון */
+.hero-section {
+    min-height: 85vh; /* תופס כמעט את כל גובה המסך הראשוני */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 10%;
+}
+
+.hero-content h1 { font-size: 3.5rem; color: var(--bg-dark); margin-bottom: 20px; }
+.hero-content p { font-size: 1.3rem; color: var(--text-muted); max-width: 750px; margin: 0 auto 40px; }
+
+.hero-btns { display: flex; gap: 20px; justify-content: center; }
+.btn-primary { background: var(--primary-teal); color: white; border: none; padding: 14px 35px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+.btn-secondary { background: white; border: 1px solid #cbd5e1; padding: 14px 35px; border-radius: 8px; cursor: pointer; }
+
+/* שאר האתר */
+.features-section { padding: 80px 8%; background: #fff; }
+.section-title { text-align: center; font-size: 2rem; margin-bottom: 50px; }
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+.f-card { padding: 30px; border: 1px solid #f1f5f9; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+
+.dark-stats { background: var(--bg-dark); color: white; padding: 60px 8%; display: flex; justify-content: space-between; text-align: center; }
+.stat h3 { color: var(--primary-teal); font-size: 2.2rem; margin: 0; }
+
+.testimonials { padding: 80px 8%; background: #f8fafc; }
+.t-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.t-card { background: white; padding: 25px; border-radius: 12px; }
+.stars { color: #fbbf24; margin-bottom: 10px; }
+
+.main-footer { background: var(--bg-dark); color: white; padding: 50px 8% 20px; }
+.footer-grid { display: flex; justify-content: space-between; margin-bottom: 30px; }
+.footer-bottom { text-align: center; opacity: 0.5; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
