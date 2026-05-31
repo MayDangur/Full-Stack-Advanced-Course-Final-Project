@@ -46,3 +46,53 @@ body { margin: 0; font-family: 'Assistant', sans-serif; direction: rtl; color: v
 .main-footer { background: var(--bg-dark); color: white; padding: 50px 8% 20px; }
 .footer-grid { display: flex; justify-content: space-between; margin-bottom: 30px; }
 .footer-bottom { text-align: center; opacity: 0.5; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+/* Register / Login Forms */
+
+.form-container {
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.form-container h1 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.form-subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 30px;
+}
+
+.form-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-container input {
+    padding: 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.form-container button {
+    margin-top: 10px;
+}
+
+.form-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.form-link a {
+    color: var(--primary-teal);
+    text-decoration: none;
+    font-weight: 600;
+}
