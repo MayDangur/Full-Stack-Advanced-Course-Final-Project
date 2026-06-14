@@ -1,3 +1,6 @@
+import authMiddleware, {
+  AuthRequest,
+} from "../middleware/authMiddleware";
 import jwt from "jsonwebtoken";
 import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
@@ -105,4 +108,23 @@ router.post("/login", async (req: Request, res: Response) => {
     });
   }
 });
+router.get(
+  "/me",
+  authMiddleware,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      res.status(200).json({
+        success: true,
+        user: req.user,
+      });
+    } catch (error) {
+      const err = error as Error;
+
+      res.status(500).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  }
+);
 export default router;
