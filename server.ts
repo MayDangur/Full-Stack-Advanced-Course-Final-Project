@@ -6,6 +6,8 @@ import cors from "cors";
 import authRoutes from "./routes/auth_routes";
 import taxRequestRoutes from "./routes/taxRequest_routes";
 
+import errorHandler from "./middleware/errorHandler";
+
 dotenv.config();
 
 const app = express();
@@ -13,8 +15,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/tax-requests", taxRequestRoutes);
+
+// Global Error Handler
+app.use(errorHandler);
 
 const MONGO_URI =
   process.env.MONGO_URI || "mongodb://127.0.0.1:27017/taxwise";
