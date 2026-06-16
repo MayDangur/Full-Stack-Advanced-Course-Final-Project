@@ -2,9 +2,11 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from "path";
 
 import authRoutes from "./routes/auth_routes";
 import taxRequestRoutes from "./routes/taxRequest_routes";
+import documentRoutes from "./routes/document_routes";
 
 import errorHandler from "./middleware/errorHandler";
 
@@ -15,15 +17,33 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Static files (uploaded documents)
+app.use(
+  "/uploads",
+  express.static(
+    path.join(__dirname, "uploads")
+  )
+);
+
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/tax-requests", taxRequestRoutes);
+
+app.use(
+  "/api/tax-requests",
+  taxRequestRoutes
+);
+
+app.use(
+  "/api/documents",
+  documentRoutes
+);
 
 // Global Error Handler
 app.use(errorHandler);
 
 const MONGO_URI =
-  process.env.MONGO_URI || "mongodb://127.0.0.1:27017/taxwise";
+  process.env.MONGO_URI ||
+  "mongodb://127.0.0.1:27017/taxwise";
 
 mongoose
   .connect(MONGO_URI)
@@ -34,8 +54,11 @@ mongoose
     console.error(err);
   });
 
-const PORT: number = Number(process.env.PORT) || 5000;
+const PORT: number =
+  Number(process.env.PORT) || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
+  console.log(
+    `Server started on port ${PORT}`
+  );
 });
