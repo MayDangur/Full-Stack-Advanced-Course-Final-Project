@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function Home() {
   return (
     <>
@@ -8,8 +10,13 @@ function Home() {
         </div>
 
         <div className="nav-controls">
-          <button className="btn-text">Login</button>
-          <button className="btn-filled">Register</button>
+          <Link to="/login" className="btn-text">
+            Login
+          </Link>
+
+          <Link to="/register" className="btn-filled">
+            Register
+          </Link>
         </div>
       </nav>
 
@@ -19,15 +26,18 @@ function Home() {
           <h1>Smart Tax Consulting & Tax Refund Management</h1>
 
           <p>
-            A professional platform for managing tax
-            processes, refunds and declarations in a
-            simple, fast and secure way.
+            A professional platform for managing tax processes,
+            refunds and declarations in a simple, fast and secure
+            way.
           </p>
 
           <div className="hero-btns">
-            <button className="btn-primary">
+            <Link
+              to="/register"
+              className="btn-primary"
+            >
               Get Started
-            </button>
+            </Link>
 
             <button className="btn-secondary">
               Book a Meeting
