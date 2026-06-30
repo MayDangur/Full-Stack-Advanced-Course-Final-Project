@@ -1,9 +1,13 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useState,
-  ReactNode,
 } from "react";
+
+import type { ReactNode } from "react";
+
+import api from "../services/api";
 
 interface User {
   id: string;
@@ -15,6 +19,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  loading: boolean;
   login: (user: User, token: string) => void;
   logout: () => void;
 }
@@ -36,17 +41,54 @@ export function AuthProvider({
 
   const [token, setToken] = useState<
     string | null
-  >(null);
+  >(localStorage.getItem("token"));
+
+  const [loading, setLoading] =
+    useState(true);
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await api.get(
+          "/auth/me",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setUser(response.data.user);
+      } catch (error) {
+        localStorage.removeItem("token");
+        setToken(null);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getCurrentUser();
+  }, [token]);
 
   const login = (
     user: User,
     token: string
   ) => {
+    localStorage.setItem("token", token);
+
     setUser(user);
     setToken(token);
   };
 
   const logout = () => {
+    localStorage.removeItem("token");
+
     setUser(null);
     setToken(null);
   };
@@ -56,6 +98,7 @@ export function AuthProvider({
       value={{
         user,
         token,
+        loading,
         login,
         logout,
       }}

@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-function Dashboard() {
+function PersonalArea() {
+  const { user, logout } = useAuth();
+
   return (
     <>
       <nav className="navbar">
@@ -13,7 +16,11 @@ function Dashboard() {
             Home
           </Link>
 
-          <Link to="/login" className="btn-filled">
+          <Link
+            to="/login"
+            className="btn-filled"
+            onClick={logout}
+          >
             Logout
           </Link>
         </div>
@@ -21,13 +28,12 @@ function Dashboard() {
 
       <section className="features-section">
         <h1 className="section-title">
-          Personal Area
+          {user?.name}'s Personal Area
         </h1>
 
         <p className="form-subtitle">
-          Welcome back. Here you can manage,
-          edit and track all your tax refund
-          requests.
+          Welcome back. Here you can manage, edit and
+          track all your tax refund requests.
         </p>
 
         <div
@@ -42,78 +48,34 @@ function Dashboard() {
         </div>
 
         <div className="features-grid">
-          <div className="f-card">
-            <h3>Tax Refund 2025</h3>
+          {[1, 2, 3].map((card) => (
+            <div className="f-card" key={card}>
+              <h3>Tax Request</h3>
 
-            <p>
-              Request Status:
-              <strong> Pending</strong>
-            </p>
+              <p>
+                Request Status:
+                <strong> ---</strong>
+              </p>
 
-            <div
-              style={{
-                marginTop: "20px",
-              }}
-            >
-              <button className="btn-primary">
-                Edit
-              </button>
+              <div
+                style={{
+                  marginTop: "20px",
+                }}
+              >
+                <button className="btn-primary">
+                  Edit
+                </button>
 
-              <button className="btn-secondary">
-                Delete
-              </button>
+                <button className="btn-secondary">
+                  Delete
+                </button>
+              </div>
             </div>
-          </div>
-
-          <div className="f-card">
-            <h3>Workplace Tax Refund</h3>
-
-            <p>
-              Request Status:
-              <strong> Approved</strong>
-            </p>
-
-            <div
-              style={{
-                marginTop: "20px",
-              }}
-            >
-              <button className="btn-primary">
-                Edit
-              </button>
-
-              <button className="btn-secondary">
-                Delete
-              </button>
-            </div>
-          </div>
-
-          <div className="f-card">
-            <h3>Freelance Income Report</h3>
-
-            <p>
-              Request Status:
-              <strong> In Review</strong>
-            </p>
-
-            <div
-              style={{
-                marginTop: "20px",
-              }}
-            >
-              <button className="btn-primary">
-                Edit
-              </button>
-
-              <button className="btn-secondary">
-                Delete
-              </button>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
     </>
   );
 }
 
-export default Dashboard;
+export default PersonalArea;

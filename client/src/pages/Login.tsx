@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
+
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -30,8 +34,8 @@ function Login() {
         formData
       );
 
-      localStorage.setItem(
-        "token",
+      login(
+        response.data.user,
         response.data.token
       );
 
@@ -40,7 +44,7 @@ function Login() {
       navigate("/personal-area");
     } catch (error: any) {
       alert(
-        error.response?.data?.message ||
+        error.response?.data?.message ??
           "Login failed"
       );
     }
@@ -75,8 +79,8 @@ function Login() {
           <h1>Welcome Back</h1>
 
           <p className="form-subtitle">
-            Sign in to access your personal
-            tax management area.
+            Sign in to access your personal tax
+            management area.
           </p>
 
           <form onSubmit={handleSubmit}>

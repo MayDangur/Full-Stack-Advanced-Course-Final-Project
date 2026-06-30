@@ -119,16 +119,26 @@ export const login = async (
     });
   }
 };
-
 // Get current user
 export const getMe = async (
   req: AuthRequest,
   res: Response
 ) => {
   try {
+    const user = await User.findById(
+      req.user?.userId
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
     res.status(200).json({
       success: true,
-      user: req.user,
+      user,
     });
   } catch (error) {
     const err = error as Error;
