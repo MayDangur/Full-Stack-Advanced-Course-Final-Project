@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/MayDangur/Full-Stack-Advanced-Course-Final-Project#readme",
   "dependencies": {
+    "@reduxjs/toolkit": "^2.12.0",
     "axios": "^1.18.1",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
@@ -29,6 +30,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.6.3",
     "multer": "^2.2.0",
+    "react-redux": "^9.3.0",
     "react-router-dom": "^6.28.0"
   },
   "devDependencies": {
