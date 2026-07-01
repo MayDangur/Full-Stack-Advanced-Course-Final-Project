@@ -1,8 +1,14 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+
 import { useAuth } from "../context/AuthContext";
+import TaxRequestForm from "../components/TaxRequestForm";
 
 function PersonalArea() {
   const { user, logout } = useAuth();
+
+  const [showForm, setShowForm] =
+    useState(false);
 
   return (
     <>
@@ -32,8 +38,9 @@ function PersonalArea() {
         </h1>
 
         <p className="form-subtitle">
-          Welcome back. Here you can manage, edit and
-          track all your tax refund requests.
+          Welcome back. Here you can manage,
+          edit and track all your tax refund
+          requests.
         </p>
 
         <div
@@ -42,14 +49,26 @@ function PersonalArea() {
             marginBottom: "40px",
           }}
         >
-          <button className="btn-primary">
-            + Create New Request
+          <button
+            className="btn-primary"
+            onClick={() =>
+              setShowForm(!showForm)
+            }
+          >
+            {showForm
+              ? "Close Form"
+              : "+ Create New Request"}
           </button>
         </div>
 
+        {showForm && <TaxRequestForm />}
+
         <div className="features-grid">
           {[1, 2, 3].map((card) => (
-            <div className="f-card" key={card}>
+            <div
+              className="f-card"
+              key={card}
+            >
               <h3>Tax Request</h3>
 
               <p>
