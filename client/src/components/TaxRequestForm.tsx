@@ -1,18 +1,32 @@
 import { useState } from "react";
+import api from "../services/api";
 
 function TaxRequestForm() {
   const [title, setTitle] = useState("");
   const [description, setDescription] =
     useState("");
 
-  const handleSubmit = (
+  const handleSubmit = async (
     e: React.FormEvent
   ) => {
     e.preventDefault();
 
-    alert(
-      "The request will be connected to the server in the next step."
-    );
+    try {
+      await api.post("/tax-requests", {
+        title,
+        description,
+      });
+
+      alert("Request created successfully!");
+
+      setTitle("");
+      setDescription("");
+
+      // בשלב הבא נרענן את הרשימה אוטומטית
+    } catch (error) {
+      alert("Failed to create request");
+      console.error(error);
+    }
   };
 
   return (
