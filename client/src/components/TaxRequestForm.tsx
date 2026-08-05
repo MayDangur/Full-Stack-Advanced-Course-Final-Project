@@ -1,10 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../services/api";
 
-function TaxRequestForm() {
+interface TaxRequestFormProps {
+  onRequestCreated: () => void;
+
+  editingRequest?: {
+    _id: string;
+    title: string;
+    description: string;
+  } | null;
+}
+
+function TaxRequestForm({
+  onRequestCreated,
+  editingRequest,
+}: TaxRequestFormProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] =
     useState("");
+
+  useEffect(() => {
+    if (editingRequest) {
+      setTitle(editingRequest.title);
+      setDescription(
+        editingRequest.description
+      );
+    } else {
+      setTitle("");
+      setDescription("");
+    }
+  }, [editingRequest]);
 
   const handleSubmit = async (
     e: React.FormEvent
@@ -12,20 +37,28 @@ function TaxRequestForm() {
     e.preventDefault();
 
     try {
-      await api.post("/tax-requests", {
-        title,
-        description,
-      });
-
-      alert("Request created successfully!");
+      if (editingRequest) {
+        await api.put(
+          `/tax-requests/${editingRequest._id}`,
+          {
+            title,
+            description,
+          }
+        );
+      } else {
+        await api.post("/tax-requests", {
+          title,
+          description,
+        });
+      }
 
       setTitle("");
       setDescription("");
 
-      // בשלב הבא נרענן את הרשימה אוטומטית
+      onRequestCreated();
     } catch (error) {
-      alert("Failed to create request");
       console.error(error);
+      alert("Failed to save request");
     }
   };
 
@@ -36,7 +69,11 @@ function TaxRequestForm() {
         marginBottom: "40px",
       }}
     >
-      <h2>Create Tax Request</h2>
+      <h2>
+        {editingRequest
+          ? "Edit Tax Request"
+          : "Create Tax Request"}
+      </h2>
 
       <form onSubmit={handleSubmit}>
         <input
@@ -46,6 +83,7 @@ function TaxRequestForm() {
           onChange={(e) =>
             setTitle(e.target.value)
           }
+          required
         />
 
         <textarea
@@ -54,6 +92,7 @@ function TaxRequestForm() {
           onChange={(e) =>
             setDescription(e.target.value)
           }
+          required
           style={{
             width: "100%",
             minHeight: "140px",
@@ -72,7 +111,9 @@ function TaxRequestForm() {
             marginTop: "20px",
           }}
         >
-          Save Request
+          {editingRequest
+            ? "Update Request"
+            : "Save Request"}
         </button>
       </form>
     </div>

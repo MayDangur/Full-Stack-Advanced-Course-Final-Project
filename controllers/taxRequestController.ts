@@ -54,13 +54,14 @@ export const getAllTaxRequests = async (
 
 // GET BY ID
 export const getTaxRequestById = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ) => {
   try {
-    const request = await TaxRequest.findById(
-      req.params.id
-    ).populate("user", "name email");
+    const request = await TaxRequest.findOne({
+      _id: req.params.id,
+      user: req.user?.userId,
+    }).populate("user", "name email");
 
     if (!request) {
       return res.status(404).json({
@@ -85,13 +86,19 @@ export const getTaxRequestById = async (
 
 // UPDATE
 export const updateTaxRequest = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ) => {
   try {
-    const updated = await TaxRequest.findByIdAndUpdate(
-      req.params.id,
-      req.body,
+    const updated = await TaxRequest.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        user: req.user?.userId,
+      },
+      {
+        title: req.body.title,
+        description: req.body.description,
+      },
       {
         new: true,
         runValidators: true,
@@ -121,13 +128,14 @@ export const updateTaxRequest = async (
 
 // DELETE
 export const deleteTaxRequest = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ) => {
   try {
-    const deleted = await TaxRequest.findByIdAndDelete(
-      req.params.id
-    );
+    const deleted = await TaxRequest.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user?.userId,
+    });
 
     if (!deleted) {
       return res.status(404).json({

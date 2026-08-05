@@ -1,14 +1,113 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 import TaxRequestForm from "../components/TaxRequestForm";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorMessage from "../components/ErrorMessage";
+import api from "../services/api";
+
+interface TaxRequest {
+  _id: string;
+  title: string;
+  description: string;
+  status: "pending" | "approved" | "rejected";
+}
 
 function PersonalArea() {
   const { user, logout } = useAuth();
 
-  const [showForm, setShowForm] =
-    useState(false);
+  const [showForm, setShowForm] = useState(false);
+
+  const [requests, setRequests] = useState<TaxRequest[]>([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState("");
+
+  const [editingRequest, setEditingRequest] =
+    useState<TaxRequest | null>(null);
+
+  const loadRequests = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const { data } = await api.get(
+        "/tax-requests"
+      );
+
+      setRequests(data.data);
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        "Failed to load tax requests."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteRequest = async (id: string) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this request?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      setError("");
+
+      await api.delete(`/tax-requests/${id}`);
+
+      loadRequests();
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        "Failed to delete request."
+      );
+    }
+  };
+
+  const getStatusColor = (
+    status: string
+  ) => {
+    switch (status) {
+      case "approved":
+        return "#22c55e";
+
+      case "rejected":
+        return "#ef4444";
+
+      default:
+        return "#f59e0b";
+    }
+  };
+
+  const getStatusText = (
+    status: string
+  ) => {
+    switch (status) {
+      case "approved":
+        return "Approved";
+
+      case "rejected":
+        return "Rejected";
+
+      default:
+        return "Pending";
+    }
+  };
+
+  useEffect(() => {
+    loadRequests();
+  }, []);
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <>
@@ -18,7 +117,10 @@ function PersonalArea() {
         </div>
 
         <div className="nav-controls">
-          <Link to="/" className="btn-text">
+          <Link
+            to="/"
+            className="btn-text"
+          >
             Home
           </Link>
 
@@ -38,10 +140,14 @@ function PersonalArea() {
         </h1>
 
         <p className="form-subtitle">
-          Welcome back. Here you can manage,
-          edit and track all your tax refund
-          requests.
+          Welcome back. Here you can
+          manage, edit and track all your
+          tax refund requests.
         </p>
+
+        {error && (
+          <ErrorMessage message={error} />
+        )}
 
         <div
           style={{
@@ -51,9 +157,13 @@ function PersonalArea() {
         >
           <button
             className="btn-primary"
-            onClick={() =>
-              setShowForm(!showForm)
-            }
+            onClick={() => {
+              if (showForm) {
+                setEditingRequest(null);
+              }
+
+              setShowForm(!showForm);
+            }}
           >
             {showForm
               ? "Close Form"
@@ -61,36 +171,85 @@ function PersonalArea() {
           </button>
         </div>
 
-        {showForm && <TaxRequestForm />}
+        {showForm && (
+          <TaxRequestForm
+            editingRequest={editingRequest}
+            onRequestCreated={() => {
+              loadRequests();
+              setShowForm(false);
+              setEditingRequest(null);
+            }}
+          />
+        )}
 
         <div className="features-grid">
-          {[1, 2, 3].map((card) => (
-            <div
-              className="f-card"
-              key={card}
-            >
-              <h3>Tax Request</h3>
-
-              <p>
-                Request Status:
-                <strong> ---</strong>
-              </p>
-
+          {requests.length === 0 ? (
+            <p>No tax requests yet.</p>
+          ) : (
+            requests.map((request) => (
               <div
-                style={{
-                  marginTop: "20px",
-                }}
+                className="f-card"
+                key={request._id}
               >
-                <button className="btn-primary">
-                  Edit
-                </button>
+                <h3>{request.title}</h3>
 
-                <button className="btn-secondary">
-                  Delete
-                </button>
+                <div
+                  style={{
+                    display: "inline-block",
+                    backgroundColor:
+                      getStatusColor(
+                        request.status
+                      ),
+                    color: "white",
+                    padding: "6px 14px",
+                    borderRadius: "20px",
+                    fontWeight: "bold",
+                    fontSize: "14px",
+                    marginBottom: "15px",
+                  }}
+                >
+                  {getStatusText(
+                    request.status
+                  )}
+                </div>
+
+                <p>{request.description}</p>
+
+                <div
+                  style={{
+                    marginTop: "20px",
+                    display: "flex",
+                    gap: "10px",
+                    justifyContent:
+                      "center",
+                  }}
+                >
+                  <button
+                    className="btn-primary"
+                    onClick={() => {
+                      setEditingRequest(
+                        request
+                      );
+                      setShowForm(true);
+                    }}
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    className="btn-secondary"
+                    onClick={() =>
+                      deleteRequest(
+                        request._id
+                      )
+                    }
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </section>
     </>
