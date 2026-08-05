@@ -1,4 +1,5 @@
 import express from "express";
+
 import authMiddleware from "../middleware/authMiddleware";
 import validate from "../middleware/validate";
 import { taxRequestSchema } from "../validation/taxRequestValidation";
@@ -13,7 +14,7 @@ import {
 
 const router = express.Router();
 
-// Create new tax request (protected + validated)
+// Create new tax request
 router.post(
   "/",
   authMiddleware,
@@ -30,11 +31,16 @@ router.get("/:id", getTaxRequestById);
 // Update request
 router.put(
   "/:id",
+  authMiddleware,
   validate(taxRequestSchema),
   updateTaxRequest
 );
 
 // Delete request
-router.delete("/:id", deleteTaxRequest);
+router.delete(
+  "/:id",
+  authMiddleware,
+  deleteTaxRequest
+);
 
 export default router;
