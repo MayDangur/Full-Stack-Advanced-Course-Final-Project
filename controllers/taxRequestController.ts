@@ -28,16 +28,15 @@ export const createTaxRequest = async (
   }
 };
 
-// GET ALL
+// GET ALL (Only current user's requests)
 export const getAllTaxRequests = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ) => {
   try {
-    const requests = await TaxRequest.find().populate(
-      "user",
-      "name email"
-    );
+    const requests = await TaxRequest.find({
+      user: req.user?.userId,
+    });
 
     res.status(200).json({
       success: true,

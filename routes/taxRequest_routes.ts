@@ -22,13 +22,21 @@ router.post(
   createTaxRequest
 );
 
-// Get all requests
-router.get("/", getAllTaxRequests);
+// Get all tax requests (only current user)
+router.get(
+  "/",
+  authMiddleware,
+  getAllTaxRequests
+);
 
-// Get single request
-router.get("/:id", getTaxRequestById);
+// Get single tax request
+router.get(
+  "/:id",
+  authMiddleware,
+  getTaxRequestById
+);
 
-// Update request
+// Update tax request
 router.put(
   "/:id",
   authMiddleware,
@@ -36,7 +44,7 @@ router.put(
   updateTaxRequest
 );
 
-// Delete request
+// Delete tax request
 router.delete(
   "/:id",
   authMiddleware,
