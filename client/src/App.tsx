@@ -1,27 +1,48 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import PersonalArea from "./pages/PersonalArea";
-import NotFound from "./pages/NotFound";
+import LoadingSpinner from "./components/LoadingSpinner";
+
+const Home = lazy(() => import("./pages/Home"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const PersonalArea = lazy(
+  () => import("./pages/PersonalArea")
+);
+const NotFound = lazy(
+  () => import("./pages/NotFound")
+);
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
+    <Suspense fallback={<LoadingSpinner />}>
+      <Routes>
+        <Route
+          path="/"
+          element={<Home />}
+        />
 
-      <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-      <Route path="/register" element={<Register />} />
+        <Route
+          path="/register"
+          element={<Register />}
+        />
 
-      <Route
-        path="/personal-area"
-        element={<PersonalArea />}
-      />
+        <Route
+          path="/personal-area"
+          element={<PersonalArea />}
+        />
 
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+        <Route
+          path="*"
+          element={<NotFound />}
+        />
+      </Routes>
+    </Suspense>
   );
 }
 
