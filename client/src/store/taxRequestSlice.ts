@@ -9,18 +9,15 @@ interface TaxRequest {
 
 interface TaxRequestState {
   requests: TaxRequest[];
-  loading: boolean;
-  error: string;
 }
 
 const initialState: TaxRequestState = {
   requests: [],
-  loading: false,
-  error: "",
 };
 
 const taxRequestSlice = createSlice({
   name: "taxRequests",
+
   initialState,
 
   reducers: {
@@ -31,27 +28,12 @@ const taxRequestSlice = createSlice({
     clearRequests(state) {
       state.requests = [];
     },
-
-    setLoading(state, action) {
-      state.loading = action.payload;
-    },
-
-    setError(state, action) {
-      state.error = action.payload;
-    },
-
-    clearError(state) {
-      state.error = "";
-    },
   },
 });
 
 export const {
   setRequests,
   clearRequests,
-  setLoading,
-  setError,
-  clearError,
 } = taxRequestSlice.actions;
 
 export default taxRequestSlice.reducer;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 import { useAuth } from "../context/AuthContext";
 import TaxRequestForm from "../components/TaxRequestForm";
@@ -8,6 +9,15 @@ import ErrorMessage from "../components/ErrorMessage";
 import TaxRequestCard from "../components/TaxRequestCard";
 
 import api from "../services/api";
+
+import type {
+  RootState,
+  AppDispatch,
+} from "../store/store";
+
+import {
+  setRequests,
+} from "../store/taxRequestSlice";
 
 interface TaxRequest {
   _id: string;
@@ -19,11 +29,16 @@ interface TaxRequest {
 function PersonalArea() {
   const { user, logout } = useAuth();
 
+  const dispatch =
+    useDispatch<AppDispatch>();
+
+  const requests = useSelector(
+    (state: RootState) =>
+      state.taxRequests.requests
+  );
+
   const [showForm, setShowForm] =
     useState(false);
-
-  const [requests, setRequests] =
-    useState<TaxRequest[]>([]);
 
   const [loading, setLoading] =
     useState(true);
@@ -43,7 +58,9 @@ function PersonalArea() {
         "/tax-requests"
       );
 
-      setRequests(data.data);
+      dispatch(
+        setRequests(data.data)
+      );
     } catch (err) {
       console.error(err);
 
