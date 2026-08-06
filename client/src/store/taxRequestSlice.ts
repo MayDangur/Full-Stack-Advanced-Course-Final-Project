@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 interface TaxRequest {
   _id: string;
@@ -24,10 +24,7 @@ const taxRequestSlice = createSlice({
   initialState,
 
   reducers: {
-    setRequests(
-      state,
-      action: PayloadAction<TaxRequest[]>
-    ) {
+    setRequests(state, action) {
       state.requests = action.payload;
     },
 
@@ -35,17 +32,11 @@ const taxRequestSlice = createSlice({
       state.requests = [];
     },
 
-    setLoading(
-      state,
-      action: PayloadAction<boolean>
-    ) {
+    setLoading(state, action) {
       state.loading = action.payload;
     },
 
-    setError(
-      state,
-      action: PayloadAction<string>
-    ) {
+    setError(state, action) {
       state.error = action.payload;
     },
 

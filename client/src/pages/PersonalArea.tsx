@@ -5,6 +5,8 @@ import { useAuth } from "../context/AuthContext";
 import TaxRequestForm from "../components/TaxRequestForm";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorMessage from "../components/ErrorMessage";
+import TaxRequestCard from "../components/TaxRequestCard";
+
 import api from "../services/api";
 
 interface TaxRequest {
@@ -17,13 +19,17 @@ interface TaxRequest {
 function PersonalArea() {
   const { user, logout } = useAuth();
 
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] =
+    useState(false);
 
-  const [requests, setRequests] = useState<TaxRequest[]>([]);
+  const [requests, setRequests] =
+    useState<TaxRequest[]>([]);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] =
+    useState(true);
 
-  const [error, setError] = useState("");
+  const [error, setError] =
+    useState("");
 
   const [editingRequest, setEditingRequest] =
     useState<TaxRequest | null>(null);
@@ -49,17 +55,20 @@ function PersonalArea() {
     }
   };
 
-  const deleteRequest = async (id: string) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this request?"
-    );
+  const deleteRequest = async (
+    id: string
+  ) => {
+    const confirmDelete =
+      window.confirm(
+        "Are you sure you want to delete this request?"
+      );
 
     if (!confirmDelete) return;
 
     try {
-      setError("");
-
-      await api.delete(`/tax-requests/${id}`);
+      await api.delete(
+        `/tax-requests/${id}`
+      );
 
       loadRequests();
     } catch (err) {
@@ -68,36 +77,6 @@ function PersonalArea() {
       setError(
         "Failed to delete request."
       );
-    }
-  };
-
-  const getStatusColor = (
-    status: string
-  ) => {
-    switch (status) {
-      case "approved":
-        return "#22c55e";
-
-      case "rejected":
-        return "#ef4444";
-
-      default:
-        return "#f59e0b";
-    }
-  };
-
-  const getStatusText = (
-    status: string
-  ) => {
-    switch (status) {
-      case "approved":
-        return "Approved";
-
-      case "rejected":
-        return "Rejected";
-
-      default:
-        return "Pending";
     }
   };
 
@@ -141,12 +120,14 @@ function PersonalArea() {
 
         <p className="form-subtitle">
           Welcome back. Here you can
-          manage, edit and track all your
-          tax refund requests.
+          manage, edit and track all
+          your tax refund requests.
         </p>
 
         {error && (
-          <ErrorMessage message={error} />
+          <ErrorMessage
+            message={error}
+          />
         )}
 
         <div
@@ -173,7 +154,9 @@ function PersonalArea() {
 
         {showForm && (
           <TaxRequestForm
-            editingRequest={editingRequest}
+            editingRequest={
+              editingRequest
+            }
             onRequestCreated={() => {
               loadRequests();
               setShowForm(false);
@@ -184,70 +167,26 @@ function PersonalArea() {
 
         <div className="features-grid">
           {requests.length === 0 ? (
-            <p>No tax requests yet.</p>
+            <p>
+              No tax requests yet.
+            </p>
           ) : (
             requests.map((request) => (
-              <div
-                className="f-card"
+              <TaxRequestCard
                 key={request._id}
-              >
-                <h3>{request.title}</h3>
-
-                <div
-                  style={{
-                    display: "inline-block",
-                    backgroundColor:
-                      getStatusColor(
-                        request.status
-                      ),
-                    color: "white",
-                    padding: "6px 14px",
-                    borderRadius: "20px",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                    marginBottom: "15px",
-                  }}
-                >
-                  {getStatusText(
-                    request.status
-                  )}
-                </div>
-
-                <p>{request.description}</p>
-
-                <div
-                  style={{
-                    marginTop: "20px",
-                    display: "flex",
-                    gap: "10px",
-                    justifyContent:
-                      "center",
-                  }}
-                >
-                  <button
-                    className="btn-primary"
-                    onClick={() => {
-                      setEditingRequest(
-                        request
-                      );
-                      setShowForm(true);
-                    }}
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    className="btn-secondary"
-                    onClick={() =>
-                      deleteRequest(
-                        request._id
-                      )
-                    }
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
+                request={request}
+                onEdit={() => {
+                  setEditingRequest(
+                    request
+                  );
+                  setShowForm(true);
+                }}
+                onDelete={() =>
+                  deleteRequest(
+                    request._id
+                  )
+                }
+              />
             ))
           )}
         </div>
