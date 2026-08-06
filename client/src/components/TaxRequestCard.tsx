@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 import UploadDocument from "./UploadDocument";
 import DocumentList from "./DocumentList";
@@ -16,104 +16,112 @@ interface TaxRequestCardProps {
   onDelete: () => void;
 }
 
-function TaxRequestCard({
-  request,
-  onEdit,
-  onDelete,
-}: TaxRequestCardProps) {
-  const [refreshDocuments, setRefreshDocuments] =
-    useState(0);
+const TaxRequestCard = React.memo(
+  function TaxRequestCard({
+    request,
+    onEdit,
+    onDelete,
+  }: TaxRequestCardProps) {
+    const [
+      refreshDocuments,
+      setRefreshDocuments,
+    ] = useState(0);
 
-  const getStatusColor = (
-    status: string
-  ) => {
-    switch (status) {
-      case "approved":
-        return "#22c55e";
+    const getStatusColor = (
+      status: string
+    ) => {
+      switch (status) {
+        case "approved":
+          return "#22c55e";
 
-      case "rejected":
-        return "#ef4444";
+        case "rejected":
+          return "#ef4444";
 
-      default:
-        return "#f59e0b";
-    }
-  };
+        default:
+          return "#f59e0b";
+      }
+    };
 
-  const getStatusText = (
-    status: string
-  ) => {
-    switch (status) {
-      case "approved":
-        return "Approved";
+    const getStatusText = (
+      status: string
+    ) => {
+      switch (status) {
+        case "approved":
+          return "Approved";
 
-      case "rejected":
-        return "Rejected";
+        case "rejected":
+          return "Rejected";
 
-      default:
-        return "Pending";
-    }
-  };
+        default:
+          return "Pending";
+      }
+    };
 
-  return (
-    <div className="f-card">
-      <h3>{request.title}</h3>
+    return (
+      <div className="f-card">
+        <h3>{request.title}</h3>
 
-      <div
-        style={{
-          display: "inline-block",
-          backgroundColor:
-            getStatusColor(request.status),
-          color: "white",
-          padding: "6px 14px",
-          borderRadius: "20px",
-          fontWeight: "bold",
-          fontSize: "14px",
-          marginBottom: "15px",
-        }}
-      >
-        {getStatusText(request.status)}
-      </div>
-
-      <p>{request.description}</p>
-
-      <UploadDocument
-        taxRequestId={request._id}
-        onUploadSuccess={() =>
-          setRefreshDocuments(
-            (prev) => prev + 1
-          )
-        }
-      />
-
-      <DocumentList
-        taxRequestId={request._id}
-        refresh={refreshDocuments}
-      />
-
-      <div
-        style={{
-          marginTop: "20px",
-          display: "flex",
-          gap: "10px",
-          justifyContent: "center",
-        }}
-      >
-        <button
-          className="btn-primary"
-          onClick={onEdit}
+        <div
+          style={{
+            display: "inline-block",
+            backgroundColor:
+              getStatusColor(
+                request.status
+              ),
+            color: "white",
+            padding: "6px 14px",
+            borderRadius: "20px",
+            fontWeight: "bold",
+            fontSize: "14px",
+            marginBottom: "15px",
+          }}
         >
-          Edit
-        </button>
+          {getStatusText(
+            request.status
+          )}
+        </div>
 
-        <button
-          className="btn-secondary"
-          onClick={onDelete}
+        <p>{request.description}</p>
+
+        <UploadDocument
+          taxRequestId={request._id}
+          onUploadSuccess={() =>
+            setRefreshDocuments(
+              (prev) => prev + 1
+            )
+          }
+        />
+
+        <DocumentList
+          taxRequestId={request._id}
+          refresh={refreshDocuments}
+        />
+
+        <div
+          style={{
+            marginTop: "20px",
+            display: "flex",
+            gap: "10px",
+            justifyContent: "center",
+          }}
         >
-          Delete
-        </button>
+          <button
+            className="btn-primary"
+            onClick={onEdit}
+          >
+            Edit
+          </button>
+
+          <button
+            className="btn-secondary"
+            onClick={onDelete}
+          >
+            Delete
+          </button>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
+);
 
 export default TaxRequestCard;

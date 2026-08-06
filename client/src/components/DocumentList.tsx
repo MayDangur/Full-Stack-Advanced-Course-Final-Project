@@ -16,9 +16,7 @@ function DocumentList({
   taxRequestId,
   refresh,
 }: DocumentListProps) {
-  const [documents, setDocuments] = useState<
-    Document[]
-  >([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
 
   const loadDocuments = async () => {
     try {
@@ -55,15 +53,16 @@ function DocumentList({
     loadDocuments();
   }, [refresh, taxRequestId]);
 
-  if (!documents.length) {
+  if (documents.length === 0) {
     return (
       <p
         style={{
           marginTop: "15px",
           color: "#64748b",
+          fontStyle: "italic",
         }}
       >
-        No documents uploaded.
+        No documents uploaded yet.
       </p>
     );
   }
@@ -71,9 +70,17 @@ function DocumentList({
   return (
     <div
       style={{
-        marginTop: "15px",
+        marginTop: "20px",
       }}
     >
+      <h4
+        style={{
+          marginBottom: "10px",
+        }}
+      >
+        Documents
+      </h4>
+
       {documents.map((doc) => (
         <div
           key={doc._id}
@@ -82,27 +89,41 @@ function DocumentList({
             justifyContent:
               "space-between",
             alignItems: "center",
-            marginBottom: "8px",
+            padding: "10px",
             border: "1px solid #e2e8f0",
-            padding: "8px 12px",
             borderRadius: "8px",
+            marginBottom: "10px",
           }}
         >
           <a
-            href={`http://localhost:5000/${doc.filePath}`}
+            href={`http://localhost:5000/uploads/${doc.filePath}`}
             target="_blank"
             rel="noreferrer"
+            style={{
+              textDecoration: "none",
+              color: "#0f766e",
+              fontWeight: "600",
+              flex: 1,
+            }}
           >
-            📎 {doc.fileName}
+            📄 {doc.fileName}
           </a>
 
           <button
-            className="btn-secondary"
             onClick={() =>
               deleteDocument(doc._id)
             }
+            style={{
+              background: "#ef4444",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              padding: "6px 10px",
+              cursor: "pointer",
+              fontSize: "12px",
+            }}
           >
-            Delete
+            🗑
           </button>
         </div>
       ))}

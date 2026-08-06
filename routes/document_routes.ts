@@ -21,9 +21,14 @@ router.post(
 
       const { taxRequestId } = req.body;
 
+      const originalFileName = Buffer.from(
+        req.file.originalname,
+        "latin1"
+      ).toString("utf8");
+
       const document = await DocumentModel.create({
-        fileName: req.file.filename,
-        filePath: req.file.path,
+        fileName: originalFileName,
+        filePath: req.file.filename,
         taxRequest: taxRequestId,
       });
 
