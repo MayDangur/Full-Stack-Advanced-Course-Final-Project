@@ -19,6 +19,7 @@ import {
   setRequests,
 } from "../store/taxRequestSlice";
 
+// Structure of a tax request used on this page
 interface TaxRequest {
   _id: string;
   title: string;
@@ -27,16 +28,19 @@ interface TaxRequest {
 }
 
 function PersonalArea() {
+  // Get the logged-in user and logout action from AuthContext
   const { user, logout } = useAuth();
 
   const dispatch =
-    useDispatch<AppDispatch>();
+    useDispatch();
 
+  // Read the current requests from Redux
   const requests = useSelector(
     (state: RootState) =>
       state.taxRequests.requests
   );
 
+  // Controls whether the create/edit form is visible
   const [showForm, setShowForm] =
     useState(false);
 
@@ -46,9 +50,11 @@ function PersonalArea() {
   const [error, setError] =
     useState("");
 
+  // Stores the request currently being edited
   const [editingRequest, setEditingRequest] =
     useState<TaxRequest | null>(null);
 
+  // Load the user's tax requests from the server
   const loadRequests = async () => {
     try {
       setLoading(true);
@@ -58,6 +64,7 @@ function PersonalArea() {
         "/tax-requests"
       );
 
+      // Keep the latest request list in Redux
       dispatch(
         setRequests(data.data)
       );
@@ -72,6 +79,7 @@ function PersonalArea() {
     }
   };
 
+  // Delete a request after user confirmation
   const deleteRequest = async (
     id: string
   ) => {
@@ -87,6 +95,7 @@ function PersonalArea() {
         `/tax-requests/${id}`
       );
 
+      // Refresh the list after a successful delete
       loadRequests();
     } catch (err) {
       console.error(err);
@@ -97,10 +106,12 @@ function PersonalArea() {
     }
   };
 
+  // Load requests when the personal area first opens
   useEffect(() => {
     loadRequests();
   }, []);
 
+  // Show a loading state while requests are being fetched
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -141,6 +152,7 @@ function PersonalArea() {
           your tax refund requests.
         </p>
 
+        {/* Show API errors when an operation fails */}
         {error && (
           <ErrorMessage
             message={error}
@@ -156,6 +168,7 @@ function PersonalArea() {
           <button
             className="btn-primary"
             onClick={() => {
+              // Clear edit mode when closing the form
               if (showForm) {
                 setEditingRequest(null);
               }
@@ -169,12 +182,14 @@ function PersonalArea() {
           </button>
         </div>
 
+        {/* The same form is used for creating and editing requests */}
         {showForm && (
           <TaxRequestForm
             editingRequest={
               editingRequest
             }
             onRequestCreated={() => {
+              // Refresh the list and close the form after saving
               loadRequests();
               setShowForm(false);
               setEditingRequest(null);
@@ -183,6 +198,7 @@ function PersonalArea() {
         )}
 
         <div className="features-grid">
+          {/* Show an empty state when the user has no requests */}
           {requests.length === 0 ? (
             <p>
               No tax requests yet.
@@ -193,6 +209,7 @@ function PersonalArea() {
                 key={request._id}
                 request={request}
                 onEdit={() => {
+                  // Open the form with the selected request
                   setEditingRequest(
                     request
                   );

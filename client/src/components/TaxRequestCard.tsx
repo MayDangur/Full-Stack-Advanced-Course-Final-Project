@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import UploadDocument from "./UploadDocument";
 import DocumentList from "./DocumentList";
 
+// Structure of a tax request displayed in the card
 interface TaxRequest {
   _id: string;
   title: string;
@@ -16,17 +17,20 @@ interface TaxRequestCardProps {
   onDelete: () => void;
 }
 
+// Prevent unnecessary re-renders when the props do not change
 const TaxRequestCard = React.memo(
   function TaxRequestCard({
     request,
     onEdit,
     onDelete,
   }: TaxRequestCardProps) {
+    // Used to refresh the document list after a new upload
     const [
       refreshDocuments,
       setRefreshDocuments,
     ] = useState(0);
 
+    // Choose a color based on the request status
     const getStatusColor = (
       status: string
     ) => {
@@ -42,6 +46,7 @@ const TaxRequestCard = React.memo(
       }
     };
 
+    // Convert the stored status into text for the user
     const getStatusText = (
       status: string
     ) => {
@@ -61,6 +66,7 @@ const TaxRequestCard = React.memo(
       <div className="f-card">
         <h3>{request.title}</h3>
 
+        {/* Display the current request status */}
         <div
           style={{
             display: "inline-block",
@@ -83,6 +89,7 @@ const TaxRequestCard = React.memo(
 
         <p>{request.description}</p>
 
+        {/* Upload documents for this specific tax request */}
         <UploadDocument
           taxRequestId={request._id}
           onUploadSuccess={() =>
@@ -92,6 +99,7 @@ const TaxRequestCard = React.memo(
           }
         />
 
+        {/* Refresh the document list after an upload */}
         <DocumentList
           taxRequestId={request._id}
           refresh={refreshDocuments}

@@ -9,6 +9,7 @@ import type { ReactNode } from "react";
 
 import api from "../services/api";
 
+// Basic data stored for the logged-in user
 interface User {
   id: string;
   name: string;
@@ -16,6 +17,7 @@ interface User {
   role: string;
 }
 
+// Values and actions available through the auth context
 interface AuthContextType {
   user: User | null;
   token: string | null;
@@ -35,17 +37,21 @@ interface AuthProviderProps {
 export function AuthProvider({
   children,
 }: AuthProviderProps) {
+  // Keep the current user available across the app
   const [user, setUser] = useState<User | null>(
     null
   );
 
+  // Restore the saved token when the app starts
   const [token, setToken] = useState<
     string | null
   >(localStorage.getItem("token"));
 
+  // Used while checking the current authentication state
   const [loading, setLoading] =
     useState(true);
 
+  // Restore the user session when a token is available
   useEffect(() => {
     const getCurrentUser = async () => {
       if (!token) {
@@ -54,6 +60,7 @@ export function AuthProvider({
       }
 
       try {
+        // Ask the server for the user connected to this token
         const response = await api.get(
           "/auth/me",
           {
@@ -65,6 +72,7 @@ export function AuthProvider({
 
         setUser(response.data.user);
       } catch (error) {
+        // Clear the session if the saved token is no longer valid
         localStorage.removeItem("token");
         setToken(null);
         setUser(null);
@@ -76,6 +84,7 @@ export function AuthProvider({
     getCurrentUser();
   }, [token]);
 
+  // Save a successful login in both storage and context
   const login = (
     user: User,
     token: string
@@ -86,6 +95,7 @@ export function AuthProvider({
     setToken(token);
   };
 
+  // Clear all authentication data on logout
   const logout = () => {
     localStorage.removeItem("token");
 
@@ -93,6 +103,7 @@ export function AuthProvider({
     setToken(null);
   };
 
+  // Share the authentication state with the rest of the app
   return (
     <AuthContext.Provider
       value={{
@@ -108,9 +119,11 @@ export function AuthProvider({
   );
 }
 
+// Custom hook for accessing the auth context
 export function useAuth() {
   const context = useContext(AuthContext);
 
+  // Prevent using the hook outside of AuthProvider
   if (!context) {
     throw new Error(
       "useAuth must be used inside AuthProvider"

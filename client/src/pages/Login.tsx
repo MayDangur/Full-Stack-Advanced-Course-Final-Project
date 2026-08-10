@@ -8,15 +8,18 @@ import { useAuth } from "../context/AuthContext";
 function Login() {
   const navigate = useNavigate();
 
+  // Use the shared authentication context
   const { login } = useAuth();
 
+  // Store the email and password entered by the user
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
+  // Update the matching field while the user types
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent
   ) => {
     setFormData({
       ...formData,
@@ -24,17 +27,20 @@ function Login() {
     });
   };
 
+  // Handle regular email and password login
   const handleSubmit = async (
     e: React.FormEvent
   ) => {
     e.preventDefault();
 
     try {
+      // Send the login details to the server
       const response = await api.post(
         "/auth/login",
         formData
       );
 
+      // Save the authenticated user and JWT in the context
       login(
         response.data.user,
         response.data.token
@@ -42,6 +48,7 @@ function Login() {
 
       alert("Login successful!");
 
+      // Continue to the user's personal area
       navigate("/personal-area");
     } catch (error: any) {
       alert(
@@ -49,6 +56,49 @@ function Login() {
           "Login failed"
       );
     }
+  };
+
+  // Handle a successful response from Google
+  const handleGoogleSuccess = async (
+    credentialResponse: any
+  ) => {
+    try {
+      // Make sure Google returned a credential
+      if (!credentialResponse.credential) {
+        alert(
+          "Google login failed: no credential received."
+        );
+        return;
+      }
+
+      // Send the Google credential to the backend for verification
+      const response = await api.post(
+        "/auth/google",
+        {
+          credential: credentialResponse.credential,
+        }
+      );
+
+      // Google login uses the same auth context as regular login
+      login(
+        response.data.user,
+        response.data.token
+      );
+
+      alert("Google login successful!");
+
+      navigate("/personal-area");
+    } catch (error: any) {
+      alert(
+        error.response?.data?.message ??
+          "Google login failed"
+      );
+    }
+  };
+
+  // Handle errors returned directly by Google Login
+  const handleGoogleError = () => {
+    alert("Google login failed");
   };
 
   return (
@@ -84,6 +134,7 @@ function Login() {
             management area.
           </p>
 
+          {/* Regular email and password login */}
           <form onSubmit={handleSubmit}>
             <input
               type="email"
@@ -91,6 +142,7 @@ function Login() {
               placeholder="Email Address"
               value={formData.email}
               onChange={handleChange}
+              required
             />
 
             <input
@@ -99,6 +151,7 @@ function Login() {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
+              required
             />
 
             <button
@@ -109,6 +162,7 @@ function Login() {
             </button>
           </form>
 
+          {/* Alternative login using a Google account */}
           <div
             style={{
               margin: "25px 0",
@@ -125,17 +179,8 @@ function Login() {
             </p>
 
             <GoogleLogin
-              onSuccess={(credentialResponse) => {
-                console.log(
-                  "Google Credential:",
-                  credentialResponse
-                );
-              }}
-              onError={() => {
-                console.log(
-                  "Google Login Failed"
-                );
-              }}
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
             />
           </div>
 

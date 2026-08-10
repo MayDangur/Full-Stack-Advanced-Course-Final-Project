@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import api from "../services/api";
 
 function Register() {
+  // Store all registration form fields
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -10,8 +11,9 @@ function Register() {
     confirmPassword: "",
   });
 
+  // Update the matching field while the user types
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent
   ) => {
     setFormData({
       ...formData,
@@ -19,11 +21,13 @@ function Register() {
     });
   };
 
+  // Handle the registration form submission
   const handleSubmit = async (
     e: React.FormEvent
   ) => {
     e.preventDefault();
 
+    // Make sure both password fields match
     if (
       formData.password !==
       formData.confirmPassword
@@ -33,6 +37,7 @@ function Register() {
     }
 
     try {
+      // Send the registration data to the backend
       const response = await api.post(
         "/auth/register",
         {
@@ -42,6 +47,7 @@ function Register() {
         }
       );
 
+      // Show the success message returned by the server
       alert(response.data.message);
     } catch (error: any) {
       alert(
@@ -81,6 +87,7 @@ function Register() {
             refund requests easily and securely.
           </p>
 
+          {/* Registration form */}
           <form onSubmit={handleSubmit}>
             <input
               type="text"

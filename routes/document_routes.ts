@@ -9,9 +9,11 @@ const router = express.Router();
  */
 router.post(
   "/upload",
+  // Multer handles the uploaded document
   upload.single("document"),
   async (req, res) => {
     try {
+      // Make sure a file was actually uploaded
       if (!req.file) {
         return res.status(400).json({
           success: false,
@@ -21,11 +23,13 @@ router.post(
 
       const { taxRequestId } = req.body;
 
+      // Preserve Hebrew and other UTF-8 filenames
       const originalFileName = Buffer.from(
         req.file.originalname,
         "latin1"
       ).toString("utf8");
 
+      // Save the file information and connect it to the tax request
       const document = await DocumentModel.create({
         fileName: originalFileName,
         filePath: req.file.filename,
@@ -54,6 +58,7 @@ router.get(
   "/:taxRequestId",
   async (req, res) => {
     try {
+      // Find all documents connected to this tax request
       const documents =
         await DocumentModel.find({
           taxRequest: req.params.taxRequestId,
@@ -81,6 +86,7 @@ router.delete(
   "/:id",
   async (req, res) => {
     try {
+      // Find and remove the document by its ID
       const document =
         await DocumentModel.findByIdAndDelete(
           req.params.id

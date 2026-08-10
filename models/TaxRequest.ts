@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 
+// TypeScript structure for a tax request document
 export interface ITaxRequest extends Document {
   title: string;
   description: string;
@@ -9,7 +10,8 @@ export interface ITaxRequest extends Document {
   updatedAt: Date;
 }
 
-const taxRequestSchema = new Schema<ITaxRequest>(
+// Define how tax requests are stored in MongoDB
+const taxRequestSchema = new Schema(
   {
     title: {
       type: String,
@@ -17,18 +19,21 @@ const taxRequestSchema = new Schema<ITaxRequest>(
       trim: true,
     },
 
+    // Main details provided by the user
     description: {
       type: String,
       required: true,
       trim: true,
     },
 
+    // Every new request starts as pending
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
 
+    // Connect each request to the user who created it
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -36,11 +41,13 @@ const taxRequestSchema = new Schema<ITaxRequest>(
     },
   },
   {
+    // Automatically adds createdAt and updatedAt
     timestamps: true,
   }
 );
 
-const TaxRequest = mongoose.model<ITaxRequest>(
+// Create the TaxRequest model from the schema
+const TaxRequest = mongoose.model(
   "TaxRequest",
   taxRequestSchema
 );

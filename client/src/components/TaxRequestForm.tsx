@@ -19,6 +19,7 @@ function TaxRequestForm({
   const [description, setDescription] =
     useState("");
 
+  // Fill the form when an existing request is selected for editing
   useEffect(() => {
     if (editingRequest) {
       setTitle(editingRequest.title);
@@ -26,6 +27,7 @@ function TaxRequestForm({
         editingRequest.description
       );
     } else {
+      // Start with an empty form when creating a new request
       setTitle("");
       setDescription("");
     }
@@ -37,6 +39,7 @@ function TaxRequestForm({
     e.preventDefault();
 
     try {
+      // Update the existing request when editing
       if (editingRequest) {
         await api.put(
           `/tax-requests/${editingRequest._id}`,
@@ -46,15 +49,18 @@ function TaxRequestForm({
           }
         );
       } else {
+        // Create a new request when the form is not in edit mode
         await api.post("/tax-requests", {
           title,
           description,
         });
       }
 
+      // Clear the form after a successful save
       setTitle("");
       setDescription("");
 
+      // Let the parent refresh the request list
       onRequestCreated();
     } catch (error) {
       console.error(error);
@@ -69,6 +75,7 @@ function TaxRequestForm({
         marginBottom: "40px",
       }}
     >
+      {/* Change the title depending on create or edit mode */}
       <h2>
         {editingRequest
           ? "Edit Tax Request"
@@ -111,6 +118,7 @@ function TaxRequestForm({
             marginTop: "20px",
           }}
         >
+          {/* Use the matching action label for each mode */}
           {editingRequest
             ? "Update Request"
             : "Save Request"}

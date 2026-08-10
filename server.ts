@@ -7,14 +7,18 @@ import path from "path";
 import authRoutes from "./routes/auth_routes";
 import taxRequestRoutes from "./routes/taxRequest_routes";
 import documentRoutes from "./routes/document_routes";
-
 import errorHandler from "./middleware/errorHandler";
 
+// Load environment variables
 dotenv.config();
 
+// Create the Express application
 const app = express();
 
+// Allow requests from the frontend
 app.use(cors());
+
+// Parse incoming JSON requests
 app.use(express.json());
 
 // Static files (uploaded documents)
@@ -26,25 +30,31 @@ app.use(
 );
 
 // Routes
+// Authentication routes
 app.use("/api/auth", authRoutes);
 
+// Tax request routes
 app.use(
   "/api/tax-requests",
   taxRequestRoutes
 );
 
+// Document upload and management routes
 app.use(
   "/api/documents",
   documentRoutes
 );
 
 // Global Error Handler
+// Handle errors after all application routes
 app.use(errorHandler);
 
+// Use the configured MongoDB connection
 const MONGO_URI =
   process.env.MONGO_URI ||
   "mongodb://127.0.0.1:27017/taxwise";
 
+// Connect the server to MongoDB
 mongoose
   .connect(MONGO_URI)
   .then(() => {
@@ -54,9 +64,11 @@ mongoose
     console.error(err);
   });
 
+// Use the environment port or 5000 by default
 const PORT: number =
   Number(process.env.PORT) || 5000;
 
+// Start the Express server
 app.listen(PORT, () => {
   console.log(
     `Server started on port ${PORT}`

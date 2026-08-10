@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 
+// TypeScript structure for a user document
 export interface IUser extends Document {
   name: string;
   email: string;
@@ -9,7 +10,8 @@ export interface IUser extends Document {
   updatedAt: Date;
 }
 
-const userSchema = new Schema<IUser>(
+// Define how users are stored in MongoDB
+const userSchema = new Schema(
   {
     name: {
       type: String,
@@ -17,6 +19,7 @@ const userSchema = new Schema<IUser>(
       trim: true,
     },
 
+    // Each email can belong to only one user
     email: {
       type: String,
       required: true,
@@ -25,6 +28,7 @@ const userSchema = new Schema<IUser>(
       trim: true,
     },
 
+    // Password is hidden from queries by default
     password: {
       type: String,
       required: true,
@@ -32,6 +36,7 @@ const userSchema = new Schema<IUser>(
       select: false,
     },
 
+    // New users get the regular user role by default
     role: {
       type: String,
       enum: ["user", "admin"],
@@ -39,10 +44,12 @@ const userSchema = new Schema<IUser>(
     },
   },
   {
+    // Automatically adds createdAt and updatedAt
     timestamps: true,
   }
 );
 
-const User = mongoose.model<IUser>("User", userSchema);
+// Create the User model from the schema
+const User = mongoose.model("User", userSchema);
 
 export default User;

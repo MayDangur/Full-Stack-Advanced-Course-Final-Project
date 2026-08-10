@@ -8,12 +8,14 @@ export const createTaxRequest = async (
   res: Response
 ) => {
   try {
+    // Create a request and connect it to the logged-in user
     const taxRequest = await TaxRequest.create({
       title: req.body.title,
       description: req.body.description,
       user: req.user?.userId,
     });
 
+    // Return the newly created request
     res.status(201).json({
       success: true,
       data: taxRequest,
@@ -34,6 +36,7 @@ export const getAllTaxRequests = async (
   res: Response
 ) => {
   try {
+    // Get only requests that belong to the logged-in user
     const requests = await TaxRequest.find({
       user: req.user?.userId,
     });
@@ -58,6 +61,7 @@ export const getTaxRequestById = async (
   res: Response
 ) => {
   try {
+    // Find the request only if it belongs to the current user
     const request = await TaxRequest.findOne({
       _id: req.params.id,
       user: req.user?.userId,
@@ -90,6 +94,7 @@ export const updateTaxRequest = async (
   res: Response
 ) => {
   try {
+    // Update only a request owned by the logged-in user
     const updated = await TaxRequest.findOneAndUpdate(
       {
         _id: req.params.id,
@@ -100,6 +105,7 @@ export const updateTaxRequest = async (
         description: req.body.description,
       },
       {
+        // Return the updated document and validate the new values
         new: true,
         runValidators: true,
       }
@@ -132,6 +138,7 @@ export const deleteTaxRequest = async (
   res: Response
 ) => {
   try {
+    // Delete only a request owned by the logged-in user
     const deleted = await TaxRequest.findOneAndDelete({
       _id: req.params.id,
       user: req.user?.userId,
