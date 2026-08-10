@@ -12,7 +12,6 @@ import api from "../services/api";
 
 import type {
   RootState,
-  AppDispatch,
 } from "../store/store";
 
 import {

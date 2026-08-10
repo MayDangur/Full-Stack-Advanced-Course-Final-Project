@@ -13,8 +13,8 @@ function Register() {
 
   // Update the matching field while the user types
   const handleChange = (
-    e: React.ChangeEvent
-  ) => {
+  e: React.ChangeEvent<HTMLInputElement>
+) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,

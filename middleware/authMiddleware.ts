@@ -30,10 +30,16 @@ const authMiddleware = (
     // Extract the token from the Bearer header
     const token = authHeader.split(" ")[1];
 
+    if (!process.env.JWT_SECRET) {
+      throw new Error(
+        "JWT_SECRET is not defined in environment variables"
+      );
+    }
+
     // Verify the token and read the user data
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET || "taxwise_secret"
+      process.env.JWT_SECRET
     ) as {
       userId: string;
       role: string;
