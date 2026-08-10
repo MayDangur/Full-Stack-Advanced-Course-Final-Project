@@ -5,6 +5,7 @@ import authMiddleware from "../middleware/authMiddleware";
 import {
   register,
   login,
+  googleSignin,
   getMe,
 } from "../controllers/authController";
 
@@ -15,6 +16,9 @@ router.post("/register", register);
 
 // Login
 router.post("/login", login);
+
+// Google Login
+router.post("/google", googleSignin);
 
 // Get current user
 router.get(

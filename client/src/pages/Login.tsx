@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
@@ -107,6 +108,36 @@ function Login() {
               Login
             </button>
           </form>
+
+          <div
+            style={{
+              margin: "25px 0",
+              textAlign: "center",
+            }}
+          >
+            <p
+              style={{
+                marginBottom: "15px",
+                color: "#64748b",
+              }}
+            >
+              OR
+            </p>
+
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                console.log(
+                  "Google Credential:",
+                  credentialResponse
+                );
+              }}
+              onError={() => {
+                console.log(
+                  "Google Login Failed"
+                );
+              }}
+            />
+          </div>
 
           <p className="form-link">
             Don't have an account?{" "}
