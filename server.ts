@@ -5,93 +5,119 @@ import cors from "cors";
 import path from "path";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+
 import authRoutes from "./routes/auth_routes";
 import taxRequestRoutes from "./routes/taxRequest_routes";
 import documentRoutes from "./routes/document_routes";
 import errorHandler from "./middleware/errorHandler";
+
 // Load environment variables
 dotenv.config();
+
 // Create the Express application
 const app = express();
+
 // Allow requests from the frontend
 app.use(cors());
+
 // Add security headers
 app.use(helmet());
+
 // Parse incoming JSON requests
 app.use(express.json());
+
 // Limit requests to the API
 const apiLimiter = rateLimit({
-windowMs: 15 * 60 * 1000,
-max: 100,
-standardHeaders: true,
-legacyHeaders: false,
-message: {
-success: false,
-message: "Too many requests, please try again later.",
-},
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: "Too many requests, please try again later.",
+  },
 });
+
 app.use("/api", apiLimiter);
+
 // Limit authentication attempts
 const authLimiter = rateLimit({
-windowMs: 15 * 60 * 1000,
-max: 10,
-standardHeaders: true,
-legacyHeaders: false,
-message: {
-success: false,
-message: "Too many login attempts, please try again later.",
-},
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: "Too many login attempts, please try again later.",
+  },
 });
+
 // Static files (uploaded documents)
 app.use(
-"/uploads",
-express.static(
-path.join(__dirname, "uploads")
-)
+  "/uploads",
+  express.static(
+    path.join(__dirname, "uploads")
+  )
 );
+
 // Routes
+
 // Authentication routes
+app.use(
+  "/api/auth/register",
+  authLimiter
+);
+
 app.use(
   "/api/auth/login",
   authLimiter
 );
+
 app.use(
   "/api/auth/google",
   authLimiter
 );
+
 app.use("/api/auth", authRoutes);
+
 // Tax request routes
 app.use(
-"/api/tax-requests",
-taxRequestRoutes
+  "/api/tax-requests",
+  taxRequestRoutes
 );
+
 // Document upload and management routes
 app.use(
-"/api/documents",
-documentRoutes
+  "/api/documents",
+  documentRoutes
 );
+
 // Global Error Handler
 // Handle errors after all application routes
 app.use(errorHandler);
+
 // Use the configured MongoDB connection
 const MONGO_URI =
-process.env.MONGO_URI ||
-"mongodb://127.0.0.1:27017/taxwise";
+  process.env.MONGO_URI ||
+  "mongodb://127.0.0.1:27017/taxwise";
+
 // Connect the server to MongoDB
 mongoose
-.connect(MONGO_URI)
-.then(() => {
-console.log("MongoDB Connected");
-})
-.catch((err: Error) => {
-console.error(err);
-});
+  .connect(MONGO_URI)
+  .then(() => {
+    console.log("MongoDB Connected");
+  })
+  .catch((err: Error) => {
+    console.error(err);
+  });
+
 // Use the environment port or 5000 by default
 const PORT: number =
-Number(process.env.PORT) || 5000;
+  Number(process.env.PORT) || 5000;
+
 // Start the Express server
 app.listen(PORT, () => {
-console.log(
-`Server started on port ${PORT}`
-);
+  console.log(
+    `Server started on port ${PORT}`
+  );
 });

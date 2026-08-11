@@ -1,7 +1,12 @@
 import express from "express";
 
 import upload from "../middleware/upload";
+import authMiddleware, {
+  AuthRequest,
+} from "../middleware/authMiddleware";
+
 import DocumentModel from "../models/Document";
+import TaxRequest from "../models/TaxRequest";
 import cloudinary from "../config/cloudinary";
 
 const router = express.Router();
@@ -11,9 +16,10 @@ const router = express.Router();
  */
 router.post(
   "/upload",
+  authMiddleware,
   // Multer handles the uploaded document
   upload.single("document"),
-  async (req, res) => {
+  async (req: AuthRequest, res) => {
     try {
       // Make sure a file was actually uploaded
       if (!req.file) {
@@ -25,6 +31,26 @@ router.post(
 
       const { taxRequestId } = req.body;
 
+      if (!taxRequestId) {
+        return res.status(400).json({
+          success: false,
+          message: "Tax request ID is required",
+        });
+      }
+
+      // Make sure the tax request belongs to the logged-in user
+      const taxRequest = await TaxRequest.findOne({
+        _id: taxRequestId,
+        user: req.user?.userId,
+      });
+
+      if (!taxRequest) {
+        return res.status(404).json({
+          success: false,
+          message: "Tax request not found",
+        });
+      }
+
       // Preserve Hebrew and other UTF-8 filenames
       const originalFileName = Buffer.from(
         req.file.originalname,
@@ -33,9 +59,7 @@ router.post(
 
       // Images and PDFs can be displayed by Cloudinary.
       // Other document types are stored as raw files.
-      const resourceType:
-        | "image"
-        | "raw" =
+      const resourceType: "image" | "raw" =
         req.file.mimetype.startsWith("image/") ||
         req.file.mimetype === "application/pdf"
           ? "image"
@@ -66,7 +90,7 @@ router.post(
           publicId: uploadResult.public_id,
           mimeType: req.file.mimetype,
           resourceType,
-          taxRequest: taxRequestId,
+          taxRequest: taxRequest._id,
         });
 
       res.status(201).json({
@@ -89,13 +113,27 @@ router.post(
  */
 router.get(
   "/:taxRequestId",
-  async (req, res) => {
+  authMiddleware,
+  async (req: AuthRequest, res) => {
     try {
+      // Make sure the requested tax request belongs to the logged-in user
+      const taxRequest =
+        await TaxRequest.findOne({
+          _id: req.params.taxRequestId,
+          user: req.user?.userId,
+        });
+
+      if (!taxRequest) {
+        return res.status(404).json({
+          success: false,
+          message: "Tax request not found",
+        });
+      }
+
       // Find all documents connected to this tax request
       const documents =
         await DocumentModel.find({
-          taxRequest:
-            req.params.taxRequestId,
+          taxRequest: taxRequest._id,
         });
 
       res.status(200).json({
@@ -118,7 +156,8 @@ router.get(
  */
 router.delete(
   "/:id",
-  async (req, res) => {
+  authMiddleware,
+  async (req: AuthRequest, res) => {
     try {
       // Find the document before deleting it
       const document =
@@ -127,6 +166,21 @@ router.delete(
         );
 
       if (!document) {
+        return res.status(404).json({
+          success: false,
+          message: "Document not found",
+        });
+      }
+
+      // Make sure the document belongs to a tax request
+      // owned by the logged-in user
+      const taxRequest =
+        await TaxRequest.findOne({
+          _id: document.taxRequest,
+          user: req.user?.userId,
+        });
+
+      if (!taxRequest) {
         return res.status(404).json({
           success: false,
           message: "Document not found",
