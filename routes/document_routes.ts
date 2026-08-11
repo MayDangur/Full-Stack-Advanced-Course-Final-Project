@@ -1,6 +1,8 @@
 import express from "express";
+
 import upload from "../middleware/upload";
 import DocumentModel from "../models/Document";
+import cloudinary from "../config/cloudinary";
 
 const router = express.Router();
 
@@ -29,12 +31,43 @@ router.post(
         "latin1"
       ).toString("utf8");
 
+      // Images and PDFs can be displayed by Cloudinary.
+      // Other document types are stored as raw files.
+      const resourceType:
+        | "image"
+        | "raw" =
+        req.file.mimetype.startsWith("image/") ||
+        req.file.mimetype === "application/pdf"
+          ? "image"
+          : "raw";
+
+      // Convert the uploaded document to a data URI
+      const fileData = `data:${
+        req.file.mimetype
+      };base64,${req.file.buffer.toString(
+        "base64"
+      )}`;
+
+      // Upload the document to permanent cloud storage
+      const uploadResult =
+        await cloudinary.uploader.upload(
+          fileData,
+          {
+            folder: "taxwise/documents",
+            resource_type: resourceType,
+          }
+        );
+
       // Save the file information and connect it to the tax request
-      const document = await DocumentModel.create({
-        fileName: originalFileName,
-        filePath: req.file.filename,
-        taxRequest: taxRequestId,
-      });
+      const document =
+        await DocumentModel.create({
+          fileName: originalFileName,
+          filePath: uploadResult.secure_url,
+          publicId: uploadResult.public_id,
+          mimeType: req.file.mimetype,
+          resourceType,
+          taxRequest: taxRequestId,
+        });
 
       res.status(201).json({
         success: true,
@@ -61,7 +94,8 @@ router.get(
       // Find all documents connected to this tax request
       const documents =
         await DocumentModel.find({
-          taxRequest: req.params.taxRequestId,
+          taxRequest:
+            req.params.taxRequestId,
         });
 
       res.status(200).json({
@@ -86,9 +120,9 @@ router.delete(
   "/:id",
   async (req, res) => {
     try {
-      // Find and remove the document by its ID
+      // Find the document before deleting it
       const document =
-        await DocumentModel.findByIdAndDelete(
+        await DocumentModel.findById(
           req.params.id
         );
 
@@ -98,6 +132,21 @@ router.delete(
           message: "Document not found",
         });
       }
+
+      // Delete the stored file from Cloudinary
+      if (document.publicId) {
+        await cloudinary.uploader.destroy(
+          document.publicId,
+          {
+            resource_type:
+              document.resourceType ||
+              "raw",
+          }
+        );
+      }
+
+      // Remove the document record from MongoDB
+      await document.deleteOne();
 
       res.status(200).json({
         success: true,

@@ -1,4 +1,8 @@
-import { useRef, useState } from "react";
+import {
+  useRef,
+  useState,
+} from "react";
+
 import api from "../services/api";
 
 interface UploadDocumentProps {
@@ -20,10 +24,16 @@ function UploadDocument({
     const file =
       inputRef.current?.files?.[0];
 
-    console.log(file);
-
     if (!file) {
       alert("Please choose a file.");
+      return;
+    }
+
+    // Keep document uploads within the server limit
+    if (file.size > 10 * 1024 * 1024) {
+      alert(
+        "The file must be smaller than 10 MB."
+      );
       return;
     }
 

@@ -1,9 +1,16 @@
-import mongoose, { Document as MongooseDocument, Schema } from "mongoose";
+import mongoose, {
+  Document as MongooseDocument,
+  Schema,
+} from "mongoose";
 
 // TypeScript structure for an uploaded document
-export interface IDocument extends MongooseDocument {
+export interface IDocument
+  extends MongooseDocument {
   fileName: string;
   filePath: string;
+  publicId?: string;
+  mimeType?: string;
+  resourceType?: "image" | "raw";
   taxRequest: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -18,10 +25,29 @@ const documentSchema = new Schema(
       required: true,
     },
 
-    // Store the saved file location
+    // Store the Cloudinary file URL
     filePath: {
       type: String,
       required: true,
+    },
+
+    // Store the Cloudinary public ID for file deletion
+    publicId: {
+      type: String,
+      default: "",
+    },
+
+    // Store the original MIME type
+    mimeType: {
+      type: String,
+      default: "",
+    },
+
+    // Store the Cloudinary resource type
+    resourceType: {
+      type: String,
+      enum: ["image", "raw"],
+      default: "raw",
     },
 
     // Connect each document to its tax request
