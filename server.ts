@@ -51,7 +51,15 @@ path.join(__dirname, "uploads")
 );
 // Routes
 // Authentication routes
-app.use("/api/auth", authLimiter, authRoutes);
+app.use(
+  "/api/auth/login",
+  authLimiter
+);
+app.use(
+  "/api/auth/google",
+  authLimiter
+);
+app.use("/api/auth", authRoutes);
 // Tax request routes
 app.use(
 "/api/tax-requests",

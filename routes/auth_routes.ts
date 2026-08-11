@@ -1,12 +1,14 @@
 import express from "express";
 
 import authMiddleware from "../middleware/authMiddleware";
+import profileUpload from "../middleware/profileUpload";
 
 import {
   register,
   login,
   googleSignin,
   getMe,
+  updateProfileImage,
 } from "../controllers/authController";
 
 const router = express.Router();
@@ -25,6 +27,14 @@ router.get(
   "/me",
   authMiddleware,
   getMe
+);
+
+// Upload or update profile image
+router.put(
+  "/profile-image",
+  authMiddleware,
+  profileUpload.single("profileImage"),
+  updateProfileImage
 );
 
 export default router;

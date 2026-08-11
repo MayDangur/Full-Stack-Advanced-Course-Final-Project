@@ -28,7 +28,11 @@ interface TaxRequest {
 
 function PersonalArea() {
   // Get the logged-in user and logout action from AuthContext
-  const { user, logout } = useAuth();
+  const {
+    user,
+    logout,
+    updateUser,
+  } = useAuth();
 
   const dispatch =
     useDispatch();
@@ -48,6 +52,18 @@ function PersonalArea() {
 
   const [error, setError] =
     useState("");
+
+  // Stores the selected profile image before uploading
+  const [
+    profileImageFile,
+    setProfileImageFile,
+  ] = useState<File | null>(null);
+
+  // Used while a profile image is being uploaded
+  const [
+    uploadingProfileImage,
+    setUploadingProfileImage,
+  ] = useState(false);
 
   // Stores the request currently being edited
   const [editingRequest, setEditingRequest] =
@@ -75,6 +91,51 @@ function PersonalArea() {
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Upload or replace the current user's profile image
+  const uploadProfileImage = async () => {
+    if (!profileImageFile) {
+      setError(
+        "Please select a profile image first."
+      );
+      return;
+    }
+
+    try {
+      setUploadingProfileImage(true);
+      setError("");
+
+      const formData = new FormData();
+
+      formData.append(
+        "profileImage",
+        profileImageFile
+      );
+
+      const { data } = await api.put(
+      "/auth/profile-image",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+      );
+
+      // Update AuthContext so the new image appears immediately
+      updateUser(data.user);
+
+      setProfileImageFile(null);
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        "Failed to update profile image."
+      );
+    } finally {
+      setUploadingProfileImage(false);
     }
   };
 
@@ -150,6 +211,77 @@ function PersonalArea() {
           manage, edit and track all
           your tax refund requests.
         </p>
+
+        {/* Show and update the current user's profile image */}
+        <div
+          style={{
+            textAlign: "center",
+            marginBottom: "40px",
+          }}
+        >
+          {user?.profileImage ? (
+            <img
+              src={user.profileImage}
+              alt={`${user.name}'s profile`}
+              style={{
+                width: "120px",
+                height: "120px",
+                borderRadius: "50%",
+                objectFit: "cover",
+                marginBottom: "15px",
+                border: "3px solid #e2e8f0",
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "120px",
+                height: "120px",
+                borderRadius: "50%",
+                margin: "0 auto 15px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#e2e8f0",
+                fontSize: "42px",
+              }}
+            >
+              👤
+            </div>
+          )}
+
+          <div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) =>
+                setProfileImageFile(
+                  e.target.files?.[0] ??
+                    null
+                )
+              }
+            />
+
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={uploadProfileImage}
+              disabled={
+                !profileImageFile ||
+                uploadingProfileImage
+              }
+              style={{
+                marginTop: "15px",
+              }}
+            >
+              {uploadingProfileImage
+                ? "Uploading..."
+                : user?.profileImage
+                  ? "Update Profile Image"
+                  : "Upload Profile Image"}
+            </button>
+          </div>
+        </div>
 
         {/* Show API errors when an operation fails */}
         {error && (

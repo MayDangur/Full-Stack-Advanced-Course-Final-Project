@@ -15,6 +15,7 @@ interface User {
   name: string;
   email: string;
   role: string;
+  profileImage?: string;
 }
 
 // Values and actions available through the auth context
@@ -24,6 +25,7 @@ interface AuthContextType {
   loading: boolean;
   login: (user: User, token: string) => void;
   logout: () => void;
+  updateUser: (user: User) => void;
 }
 
 const AuthContext = createContext<
@@ -95,6 +97,11 @@ export function AuthProvider({
     setToken(token);
   };
 
+  // Update the current user after profile changes
+  const updateUser = (user: User) => {
+    setUser(user);
+  };
+
   // Clear all authentication data on logout
   const logout = () => {
     localStorage.removeItem("token");
@@ -112,6 +119,7 @@ export function AuthProvider({
         loading,
         login,
         logout,
+        updateUser,
       }}
     >
       {children}

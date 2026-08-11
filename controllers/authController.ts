@@ -6,6 +6,7 @@ import crypto from "crypto";
 
 import User from "../models/User";
 import { AuthRequest } from "../middleware/authMiddleware";
+import cloudinary from "../config/cloudinary";
 
 // Google client used to verify Google ID tokens
 const googleClient = new OAuth2Client(
@@ -87,6 +88,7 @@ export const register = async (
         id: newUser._id,
         name: newUser.name,
         email: newUser.email,
+        profileImage: newUser.profileImage,
       },
     });
   } catch (error) {
@@ -148,6 +150,7 @@ export const login = async (
         name: user.name,
         email: user.email,
         role: user.role,
+        profileImage: user.profileImage,
       },
     });
   } catch (error) {
@@ -249,6 +252,7 @@ export const googleSignin = async (
         name: user.name,
         email: user.email,
         role: user.role,
+        profileImage: user.profileImage,
       },
     });
   } catch (error) {
@@ -286,6 +290,73 @@ export const getMe = async (
     // Return the current authenticated user
     res.status(200).json({
       success: true,
+      user,
+    });
+  } catch (error) {
+    const err = error as Error;
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+// Update Profile Image
+export const updateProfileImage = async (
+  req: AuthRequest,
+  res: Response
+) => {
+  try {
+    // Make sure an image was uploaded
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No profile image uploaded",
+      });
+    }
+
+    // Convert the uploaded image buffer to a data URI for Cloudinary
+    const imageData = `data:${
+      req.file.mimetype
+    };base64,${req.file.buffer.toString(
+      "base64"
+    )}`;
+
+    // Upload the profile image to Cloudinary
+    const uploadResult =
+      await cloudinary.uploader.upload(
+        imageData,
+        {
+          folder: "taxwise/profile-images",
+          resource_type: "image",
+        }
+      );
+
+    // Save the Cloudinary image URL on the current user
+    const user = await User.findByIdAndUpdate(
+      req.user?.userId,
+      {
+        profileImage: uploadResult.secure_url,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Return the user with the new profile image
+    res.status(200).json({
+      success: true,
+      message:
+        "Profile image updated successfully",
       user,
     });
   } catch (error) {

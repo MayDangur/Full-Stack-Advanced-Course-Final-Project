@@ -6,6 +6,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: "user" | "admin";
+  profileImage?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -41,6 +42,12 @@ const userSchema = new Schema(
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+
+    // Stores the uploaded profile image URL
+    profileImage: {
+      type: String,
+      default: "",
     },
   },
   {
