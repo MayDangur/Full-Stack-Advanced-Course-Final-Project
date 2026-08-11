@@ -12,11 +12,22 @@ interface DocumentListProps {
   refresh: number;
 }
 
+// Use the deployed backend in production and localhost during development
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:5000/api";
+
+const SERVER_URL = API_URL.replace(
+  /\/api\/?$/,
+  ""
+);
+
 function DocumentList({
   taxRequestId,
   refresh,
 }: DocumentListProps) {
-  const [documents, setDocuments] = useState<Document[]>([]);
+  const [documents, setDocuments] =
+    useState<Document[]>([]);
 
   const loadDocuments = async () => {
     try {
@@ -41,7 +52,9 @@ function DocumentList({
       return;
 
     try {
-      await api.delete(`/documents/${id}`);
+      await api.delete(
+        `/documents/${id}`
+      );
 
       loadDocuments();
     } catch (error) {
@@ -89,14 +102,16 @@ function DocumentList({
             justifyContent:
               "space-between",
             alignItems: "center",
+            gap: "10px",
             padding: "10px",
-            border: "1px solid #e2e8f0",
+            border:
+              "1px solid #e2e8f0",
             borderRadius: "8px",
             marginBottom: "10px",
           }}
         >
           <a
-            href={`http://localhost:5000/uploads/${doc.filePath}`}
+            href={`${SERVER_URL}/uploads/${doc.filePath}`}
             target="_blank"
             rel="noreferrer"
             style={{
@@ -107,6 +122,15 @@ function DocumentList({
             }}
           >
             📄 {doc.fileName}
+          </a>
+
+          <a
+            href={`${SERVER_URL}/uploads/${doc.filePath}`}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-text"
+          >
+            View
           </a>
 
           <button
