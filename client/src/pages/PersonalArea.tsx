@@ -138,15 +138,48 @@ function PersonalArea() {
       setUploadingProfileImage(false);
     }
   };
+  // Remove the current user's profile image
+  const removeProfileImage = async () => {
+    const confirmRemove =
+      window.confirm(
+        "Are you sure you want to remove your profile image?"
+      );
 
+
+    if (!confirmRemove) return;
+
+
+    try {
+      setError("");
+
+
+      const { data } = await api.delete(
+        "/auth/profile-image"
+      );
+
+
+      // Update AuthContext so the image disappears immediately
+      updateUser(data.user);
+
+
+      setProfileImageFile(null);
+    } catch (err) {
+      console.error(err);
+
+
+      setError(
+        "Failed to remove profile image."
+      );
+    }
+  };
   // Delete a request after user confirmation
   const deleteRequest = async (
     id: string
   ) => {
     const confirmDelete =
-      window.confirm(
-        "Are you sure you want to delete this request?"
-      );
+    window.confirm(
+      "Are you sure you want to delete this request?\n\nDeleting this request will also permanently delete all attached documents."
+    );
 
     if (!confirmDelete) return;
 
@@ -279,7 +312,25 @@ function PersonalArea() {
                 : user?.profileImage
                   ? "Update Profile Image"
                   : "Upload Profile Image"}
-            </button>
+                </button>
+                {user?.profileImage && (
+                <button
+                type="button"
+                onClick={removeProfileImage}
+                style={{
+                  marginTop: "15px",
+                  marginLeft: "10px",
+                  background: "#ef4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  padding: "10px 16px",
+                  cursor: "pointer",
+                }}
+              >
+                Remove Profile Image
+              </button>
+            )}
           </div>
         </div>
 

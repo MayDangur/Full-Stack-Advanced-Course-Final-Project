@@ -1,6 +1,8 @@
 import { Response, Request } from "express";
 import { AuthRequest } from "../middleware/authMiddleware";
 import TaxRequest from "../models/TaxRequest";
+import DocumentModel from "../models/Document";
+import cloudinary from "../config/cloudinary";
 
 // CREATE
 export const createTaxRequest = async (
@@ -138,22 +140,49 @@ export const deleteTaxRequest = async (
   res: Response
 ) => {
   try {
-    // Delete only a request owned by the logged-in user
-    const deleted = await TaxRequest.findOneAndDelete({
+    // Find the request first and make sure it belongs to the logged-in user
+    const taxRequest = await TaxRequest.findOne({
       _id: req.params.id,
       user: req.user?.userId,
     });
 
-    if (!deleted) {
+    if (!taxRequest) {
       return res.status(404).json({
         success: false,
         message: "Request not found",
       });
     }
 
+    // Find all documents connected to this tax request
+    const documents = await DocumentModel.find({
+      taxRequest: taxRequest._id,
+    });
+
+    // Delete every stored document from Cloudinary
+    for (const document of documents) {
+      if (document.publicId) {
+        await cloudinary.uploader.destroy(
+          document.publicId,
+          {
+            resource_type:
+              document.resourceType || "raw",
+          }
+        );
+      }
+    }
+
+    // Remove all document records connected to this request from MongoDB
+    await DocumentModel.deleteMany({
+      taxRequest: taxRequest._id,
+    });
+
+    // Delete the tax request after its documents have been removed
+    await taxRequest.deleteOne();
+
     res.status(200).json({
       success: true,
-      message: "Deleted successfully",
+      message:
+        "Request and attached documents deleted successfully",
     });
   } catch (error) {
     const err = error as Error;

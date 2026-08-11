@@ -368,3 +368,72 @@ export const updateProfileImage = async (
     });
   }
 };
+// Remove Profile Image
+export const removeProfileImage = async (
+  req: AuthRequest,
+  res: Response
+) => {
+  try {
+    // Find the current authenticated user
+    const user = await User.findById(
+      req.user?.userId
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Delete the current profile image from Cloudinary
+    if (user.profileImage) {
+      const urlParts =
+        user.profileImage.split("/upload/");
+
+      if (urlParts.length === 2) {
+        const pathWithVersion =
+          urlParts[1];
+
+        const pathWithoutVersion =
+          pathWithVersion.replace(
+            /^v\d+\//,
+            ""
+          );
+
+        const publicId =
+          pathWithoutVersion.replace(
+            /\.[^/.]+$/,
+            ""
+          );
+
+        await cloudinary.uploader.destroy(
+          publicId,
+          {
+            resource_type: "image",
+          }
+        );
+      }
+    }
+
+    // Remove the profile image URL from the user
+    user.profileImage = "";
+
+    await user.save();
+
+    // Return the updated user
+    res.status(200).json({
+      success: true,
+      message:
+        "Profile image removed successfully",
+      user,
+    });
+  } catch (error) {
+    const err = error as Error;
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};

@@ -9,6 +9,7 @@ import {
   googleSignin,
   getMe,
   updateProfileImage,
+  removeProfileImage,
 } from "../controllers/authController";
 
 const router = express.Router();
@@ -37,4 +38,10 @@ router.put(
   updateProfileImage
 );
 
+// Remove profile image
+router.delete(
+  "/profile-image",
+  authMiddleware,
+  removeProfileImage
+);
 export default router;
