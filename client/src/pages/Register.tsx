@@ -7,8 +7,10 @@ import { GoogleLogin } from "@react-oauth/google";
 
 
 
+
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
+
 
 
 
@@ -18,8 +20,10 @@ function Register() {
 
 
 
+
   // Use the shared authentication context
   const { login } = useAuth();
+
 
 
 
@@ -30,6 +34,7 @@ function Register() {
     password: "",
     confirmPassword: "",
   });
+
 
 
 
@@ -44,11 +49,27 @@ function Register() {
 
 
 
+
+  // Store a success message to display inside the interface
+  const [successMessage, setSuccessMessage] =
+    useState("");
+
+
+
+
+  // Store server errors to display inside the interface
+  const [serverError, setServerError] =
+    useState("");
+
+
+
+
   // Update the matching field while the user types
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = e.target;
+
 
 
 
@@ -59,12 +80,20 @@ function Register() {
 
 
 
+
     // Clear only the validation error of the field being changed
     setValidationErrors({
       ...validationErrors,
       [name]: "",
     });
+
+
+
+
+    // Clear the server error when the user changes the form
+    setServerError("");
   };
+
 
 
 
@@ -73,6 +102,7 @@ function Register() {
     e: React.FormEvent
   ) => {
     e.preventDefault();
+
 
 
 
@@ -86,11 +116,13 @@ function Register() {
 
 
 
+
     // Make sure the user entered a name
     if (!formData.name.trim()) {
       newErrors.name =
         "Full name is required.";
     }
+
 
 
 
@@ -104,11 +136,13 @@ function Register() {
 
 
 
+
       if (!emailPattern.test(formData.email)) {
         newErrors.email =
           "Please enter a valid email address.";
       }
     }
+
 
 
 
@@ -122,6 +156,7 @@ function Register() {
       newErrors.password =
         "Password must be at least 6 characters.";
     }
+
 
 
 
@@ -141,8 +176,10 @@ function Register() {
 
 
 
+
     // Show all validation errors found in the current form
     setValidationErrors(newErrors);
+
 
 
 
@@ -154,6 +191,7 @@ function Register() {
     ) {
       return;
     }
+
 
 
 
@@ -170,16 +208,34 @@ function Register() {
 
 
 
+
       // Show the success message returned by the server
-      alert(response.data.message);
+      setSuccessMessage(
+        response.data.message ||
+          "Registration successful!"
+      );
+
+
+
+
+      // Continue automatically to the login page
+      setTimeout(() => {
+        navigate("/login");
+      }, 700);
     } catch (error: any) {
       // Show an error returned by the server
-      alert(
-        error.response?.data?.message ||
-          "Registration failed"
+      const serverMessage =
+      error.response?.data?.message;
+      setServerError(
+      serverMessage ===
+        "אימייל זה כבר קיים במערכת"
+        ? "This email is already registered."
+        : serverMessage ||
+            "Registration failed"
       );
     }
   };
+
 
 
 
@@ -198,6 +254,7 @@ function Register() {
 
 
 
+
       // Send the Google credential to the backend for verification
       const response = await api.post(
         "/auth/google",
@@ -205,6 +262,7 @@ function Register() {
           credential: credentialResponse.credential,
         }
       );
+
 
 
 
@@ -216,13 +274,19 @@ function Register() {
 
 
 
+
       // Show a success message after Google registration
-      alert("Google registration successful!");
+      setSuccessMessage(
+        "Google registration successful!"
+      );
+
 
 
 
       // Continue to the user's personal area
-      navigate("/personal-area");
+      setTimeout(() => {
+        navigate("/personal-area");
+      }, 700);
     } catch (error: any) {
       // Show an error returned during Google registration
       alert(
@@ -234,10 +298,12 @@ function Register() {
 
 
 
+
   // Handle errors returned directly by Google Login
   const handleGoogleError = () => {
     alert("Google registration failed");
   };
+
 
 
 
@@ -251,10 +317,12 @@ function Register() {
 
 
 
+
         <div className="nav-controls">
           <Link to="/" className="btn-text">
             Home
           </Link>
+
 
 
 
@@ -269,10 +337,15 @@ function Register() {
 
 
 
+
       {/* Registration page */}
       <section className="hero-section">
-        <div className="form-container">
+        <div
+          className="form-container"
+          dir="ltr"
+        >
           <h1>Create Your Account</h1>
+
 
 
 
@@ -280,6 +353,7 @@ function Register() {
             Join TaxWise and manage your tax
             refund requests easily and securely.
           </p>
+
 
 
 
@@ -298,12 +372,14 @@ function Register() {
 
 
 
+
             {/* Show the validation error for the name field */}
             {validationErrors.name && (
               <p className="error-message">
                 {validationErrors.name}
               </p>
             )}
+
 
 
 
@@ -317,12 +393,14 @@ function Register() {
 
 
 
+
             {/* Show the validation error for the email field */}
             {validationErrors.email && (
               <p className="error-message">
                 {validationErrors.email}
               </p>
             )}
+
 
 
 
@@ -336,12 +414,14 @@ function Register() {
 
 
 
+
             {/* Show the validation error for the password field */}
             {validationErrors.password && (
               <p className="error-message">
                 {validationErrors.password}
               </p>
             )}
+
 
 
 
@@ -352,6 +432,7 @@ function Register() {
               value={formData.confirmPassword}
               onChange={handleChange}
             />
+
 
 
 
@@ -366,6 +447,34 @@ function Register() {
 
 
 
+
+            {/* Show server errors inside the registration interface */}
+            {serverError && (
+              <p className="error-message">
+                {serverError}
+              </p>
+            )}
+
+
+
+
+            {/* Show successful registration feedback before automatic navigation */}
+            {successMessage && (
+              <p
+                style={{
+                  color: "#16a34a",
+                  textAlign: "center",
+                  marginBottom: "15px",
+                  fontWeight: "600",
+                }}
+              >
+                {successMessage}
+              </p>
+            )}
+
+
+
+
             <button
               type="submit"
               className="btn-primary"
@@ -373,6 +482,7 @@ function Register() {
               Register
             </button>
           </form>
+
 
 
 
@@ -394,11 +504,13 @@ function Register() {
 
 
 
+
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}
             />
           </div>
+
 
 
 
@@ -414,6 +526,7 @@ function Register() {
     </>
   );
 }
+
 
 
 

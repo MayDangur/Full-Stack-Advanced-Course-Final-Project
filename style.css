@@ -1,9 +1,10 @@
 :root {
-    --primary-teal: #00bfa5;
-    --bg-dark: #0f172a;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
+--primary-teal: #00bfa5;
+--bg-dark: #0f172a;
+--text-main: #1e293b;
+--text-muted: #64748b;
 }
+
 * { box-sizing: border-box; }
 body { margin: 0; font-family: 'Assistant', sans-serif; direction: rtl; color: var(--text-main); }
 
@@ -12,14 +13,14 @@ body { margin: 0; font-family: 'Assistant', sans-serif; direction: rtl; color: v
 .btn-filled { background: var(--primary-teal); color: white; padding: 8px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; }
 .btn-text { text-decoration: none; color: var(--text-main); margin-left: 15px; }
 
-/* התיקון למרכוז החלק העליון */
+/* Centers the top section */
 .hero-section {
-    min-height: 85vh; /* תופס כמעט את כל גובה המסך הראשוני */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 0 10%;
+min-height: 85vh; /* Takes up most of the initial screen height */
+display: flex;
+justify-content: center;
+align-items: center;
+text-align: center;
+padding: 0 10%;
 }
 
 .hero-content h1 { font-size: 3.5rem; color: var(--bg-dark); margin-bottom: 20px; }
@@ -30,7 +31,7 @@ body { margin: 0; font-family: 'Assistant', sans-serif; direction: rtl; color: v
 display: inline-block; }
 .btn-secondary { background: white; border: 1px solid #cbd5e1; padding: 14px 35px; border-radius: 8px; cursor: pointer; }
 
-/* שאר האתר */
+/* Rest of the website */
 .features-section { padding: 80px 8%; background: #fff; }
 .section-title { text-align: center; font-size: 2rem; margin-bottom: 50px; }
 .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
@@ -47,53 +48,54 @@ display: inline-block; }
 .main-footer { background: var(--bg-dark); color: white; padding: 50px 8% 20px; }
 .footer-grid { display: flex; justify-content: space-between; margin-bottom: 30px; }
 .footer-bottom { text-align: center; opacity: 0.5; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+
 /* Register / Login Forms */
 
 .form-container {
-    width: 100%;
-    max-width: 500px;
-    background: white;
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+width: 100%;
+max-width: 500px;
+background: white;
+padding: 40px;
+border-radius: 16px;
+box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
 .form-container h1 {
-    text-align: center;
-    margin-bottom: 15px;
+text-align: center;
+margin-bottom: 15px;
 }
 
 .form-subtitle {
-    text-align: center;
-    color: var(--text-muted);
-    margin-bottom: 30px;
+text-align: center;
+color: var(--text-muted);
+margin-bottom: 30px;
 }
 
 .form-container form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+display: flex;
+flex-direction: column;
+gap: 15px;
 }
 
 .form-container input {
-    padding: 14px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-family: inherit;
+padding: 14px;
+border: 1px solid #cbd5e1;
+border-radius: 8px;
+font-size: 1rem;
+font-family: inherit;
 }
 
 .form-container button {
-    margin-top: 10px;
+margin-top: 10px;
 }
 
 .form-link {
-    text-align: center;
-    margin-top: 20px;
+text-align: center;
+margin-top: 20px;
 }
 
 .form-link a {
-    color: var(--primary-teal);
-    text-decoration: none;
-    font-weight: 600;
+color: var(--primary-teal);
+text-decoration: none;
+font-weight: 600;
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -65,6 +65,10 @@ function PersonalArea() {
     setUploadingProfileImage,
   ] = useState(false);
 
+  // Reference to the hidden profile image file input
+  const profileImageInputRef =
+    useRef<HTMLInputElement>(null);
+
   // Stores the request currently being edited
   const [editingRequest, setEditingRequest] =
     useState<TaxRequest | null>(null);
@@ -95,14 +99,9 @@ function PersonalArea() {
   };
 
   // Upload or replace the current user's profile image
-  const uploadProfileImage = async () => {
-    if (!profileImageFile) {
-      setError(
-        "Please select a profile image first."
-      );
-      return;
-    }
-
+  const uploadProfileImage = async (
+    file: File
+  ) => {
     try {
       setUploadingProfileImage(true);
       setError("");
@@ -111,23 +110,29 @@ function PersonalArea() {
 
       formData.append(
         "profileImage",
-        profileImageFile
+        file
       );
 
       const { data } = await api.put(
-      "/auth/profile-image",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
+        "/auth/profile-image",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       // Update AuthContext so the new image appears immediately
       updateUser(data.user);
 
       setProfileImageFile(null);
+
+      // Clear the hidden file input after a successful upload
+      if (profileImageInputRef.current) {
+        profileImageInputRef.current.value =
+          "";
+      }
     } catch (err) {
       console.error(err);
 
@@ -138,6 +143,7 @@ function PersonalArea() {
       setUploadingProfileImage(false);
     }
   };
+
   // Remove the current user's profile image
   const removeProfileImage = async () => {
     const confirmRemove =
@@ -145,41 +151,36 @@ function PersonalArea() {
         "Are you sure you want to remove your profile image?"
       );
 
-
     if (!confirmRemove) return;
-
 
     try {
       setError("");
-
 
       const { data } = await api.delete(
         "/auth/profile-image"
       );
 
-
       // Update AuthContext so the image disappears immediately
       updateUser(data.user);
-
 
       setProfileImageFile(null);
     } catch (err) {
       console.error(err);
-
 
       setError(
         "Failed to remove profile image."
       );
     }
   };
+
   // Delete a request after user confirmation
   const deleteRequest = async (
     id: string
   ) => {
     const confirmDelete =
-    window.confirm(
-      "Are you sure you want to delete this request?\n\nDeleting this request will also permanently delete all attached documents."
-    );
+      window.confirm(
+        "Are you sure you want to delete this request?\n\nDeleting this request will also permanently delete all attached documents."
+      );
 
     if (!confirmDelete) return;
 
@@ -234,7 +235,10 @@ function PersonalArea() {
         </div>
       </nav>
 
-      <section className="features-section">
+      <section
+        className="features-section personal-area"
+        dir="ltr"
+      >
         <h1 className="section-title">
           {user?.name}'s Personal Area
         </h1>
@@ -283,52 +287,76 @@ function PersonalArea() {
             </div>
           )}
 
-          <div>
+          <div
+            className="profile-image-actions"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            {/* Keep the native file input hidden and open it from the styled button */}
             <input
+              ref={profileImageInputRef}
               type="file"
               accept="image/*"
-              onChange={(e) =>
-                setProfileImageFile(
+              className="hidden-file-input"
+              hidden
+              onChange={(e) => {
+                const file =
                   e.target.files?.[0] ??
-                    null
-                )
-              }
+                  null;
+
+                setProfileImageFile(file);
+
+                // Upload immediately after the user chooses an image
+                if (file) {
+                  uploadProfileImage(
+                    file
+                  );
+                }
+              }}
             />
 
             <button
               type="button"
               className="btn-primary"
-              onClick={uploadProfileImage}
+              onClick={() =>
+                profileImageInputRef.current?.click()
+              }
               disabled={
-                !profileImageFile ||
                 uploadingProfileImage
               }
               style={{
-                marginTop: "15px",
+                minWidth: "220px",
               }}
             >
               {uploadingProfileImage
                 ? "Uploading..."
                 : user?.profileImage
-                  ? "Update Profile Image"
-                  : "Upload Profile Image"}
-                </button>
-                {user?.profileImage && (
-                <button
+                  ? "☁ Update Profile Image"
+                  : "☁ Upload Profile Image"}
+            </button>
+
+            {user?.profileImage && (
+              <button
                 type="button"
                 onClick={removeProfileImage}
+                className="profile-remove-button"
                 style={{
-                  marginTop: "15px",
-                  marginLeft: "10px",
                   background: "#ef4444",
                   color: "white",
                   border: "none",
-                  borderRadius: "6px",
-                  padding: "10px 16px",
+                  padding: "14px 35px",
+                  borderRadius: "8px",
+                  fontWeight: "600",
+                  fontFamily: "inherit",
                   cursor: "pointer",
+                  minWidth: "220px",
                 }}
               >
-                Remove Profile Image
+                🗑 Remove Profile Image
               </button>
             )}
           </div>
@@ -359,8 +387,8 @@ function PersonalArea() {
             }}
           >
             {showForm
-              ? "Close Form"
-              : "+ Create New Request"}
+              ? "✕ Close Form"
+              : "＋ Create New Request"}
           </button>
         </div>
 
@@ -379,10 +407,10 @@ function PersonalArea() {
           />
         )}
 
-        <div className="features-grid">
+        <div className="features-grid personal-requests-grid">
           {/* Show an empty state when the user has no requests */}
           {requests.length === 0 ? (
-            <p>
+            <p className="personal-empty-state">
               No tax requests yet.
             </p>
           ) : (

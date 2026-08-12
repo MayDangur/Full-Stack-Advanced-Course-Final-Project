@@ -63,7 +63,10 @@ const TaxRequestCard = React.memo(
     };
 
     return (
-      <div className="f-card">
+      <div
+        className="f-card tax-request-card"
+        dir="ltr"
+      >
         <h3>{request.title}</h3>
 
         {/* Display the current request status */}
@@ -106,6 +109,7 @@ const TaxRequestCard = React.memo(
         />
 
         <div
+          className="request-card-actions"
           style={{
             marginTop: "20px",
             display: "flex",
@@ -117,14 +121,14 @@ const TaxRequestCard = React.memo(
             className="btn-primary"
             onClick={onEdit}
           >
-            Edit
+            ✎ Edit
           </button>
 
           <button
             className="btn-secondary"
             onClick={onDelete}
           >
-            Delete
+            🗑 Delete
           </button>
         </div>
       </div>

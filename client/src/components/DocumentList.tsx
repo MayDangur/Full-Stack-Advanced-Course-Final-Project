@@ -5,6 +5,7 @@ import {
 
 import api from "../services/api";
 
+// Structure of a document displayed in the list
 interface Document {
   _id: string;
   fileName: string;
@@ -12,6 +13,7 @@ interface Document {
   mimeType?: string;
 }
 
+// Values received from the tax request card
 interface DocumentListProps {
   taxRequestId: string;
   refresh: number;
@@ -21,24 +23,29 @@ function DocumentList({
   taxRequestId,
   refresh,
 }: DocumentListProps) {
+  // Store the documents that belong to the current tax request
   const [documents, setDocuments] =
     useState<Document[]>([]);
 
+  // Store the ID of the document currently being downloaded
   const [downloadingId, setDownloadingId] =
     useState<string | null>(null);
 
+  // Load all documents connected to the current tax request
   const loadDocuments = async () => {
     try {
       const { data } = await api.get(
         `/documents/${taxRequestId}`
       );
 
+      // Save the documents returned by the server
       setDocuments(data.data);
     } catch (error) {
       console.error(error);
     }
   };
 
+  // Delete a selected document after user confirmation
   const deleteDocument = async (
     id: string
   ) => {
@@ -55,12 +62,14 @@ function DocumentList({
         `/documents/${id}`
       );
 
+      // Reload the document list after a successful delete
       await loadDocuments();
     } catch (error) {
       console.error(error);
     }
   };
 
+  // Download a document while preserving its original file name
   const downloadDocument = async (
     doc: Document
   ) => {
@@ -109,10 +118,12 @@ function DocumentList({
     }
   };
 
+  // Reload documents after an upload or when the request changes
   useEffect(() => {
     loadDocuments();
   }, [refresh, taxRequestId]);
 
+  // Show a friendly message when no documents were uploaded
   if (documents.length === 0) {
     return (
       <p
@@ -141,7 +152,9 @@ function DocumentList({
         Documents
       </h4>
 
+      {/* Display every document connected to this tax request */}
       {documents.map((doc) => {
+        // PDF and image files can be opened directly in a new browser tab
         const canView =
           doc.mimeType ===
             "application/pdf" ||
@@ -165,6 +178,7 @@ function DocumentList({
               marginBottom: "10px",
             }}
           >
+            {/* Display the original uploaded file name */}
             <span
               style={{
                 color: "#0f766e",
@@ -175,6 +189,7 @@ function DocumentList({
               📄 {doc.fileName}
             </span>
 
+            {/* Show View only for supported preview file types */}
             {canView && (
               <a
                 href={doc.filePath}
@@ -182,10 +197,11 @@ function DocumentList({
                 rel="noreferrer"
                 className="btn-text"
               >
-                View
+                👁 View
               </a>
             )}
 
+            {/* Download the document without leaving the page */}
             <button
               type="button"
               onClick={() =>
@@ -211,10 +227,11 @@ function DocumentList({
               }}
             >
               {downloadingId === doc._id
-                ? "Downloading..."
-                : "Download"}
+              ? "Downloading..."
+              : "↓ Download"}
             </button>
 
+            {/* Delete the selected document */}
             <button
               type="button"
               onClick={() =>
@@ -229,6 +246,7 @@ function DocumentList({
                 cursor: "pointer",
                 fontSize: "12px",
               }}
+              aria-label={`Delete ${doc.fileName}`}
             >
               🗑
             </button>

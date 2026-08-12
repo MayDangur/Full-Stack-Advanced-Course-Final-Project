@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
 
+import api from "../services/api";
 
 interface TaxRequestFormProps {
   onRequestCreated: () => void;
-
 
   editingRequest?: {
     _id: string;
@@ -12,7 +11,6 @@ interface TaxRequestFormProps {
     description: string;
   } | null;
 }
-
 
 function TaxRequestForm({
   onRequestCreated,
@@ -22,14 +20,12 @@ function TaxRequestForm({
   const [description, setDescription] =
     useState("");
 
-
   // Store a separate client-side validation error for each field
   const [validationErrors, setValidationErrors] =
     useState({
       title: "",
       description: "",
     });
-
 
   // Fill the form when an existing request is selected for editing
   useEffect(() => {
@@ -44,7 +40,6 @@ function TaxRequestForm({
       setDescription("");
     }
 
-
     // Clear previous validation errors when switching forms
     setValidationErrors({
       title: "",
@@ -52,12 +47,10 @@ function TaxRequestForm({
     });
   }, [editingRequest]);
 
-
   const handleSubmit = async (
     e: React.FormEvent
   ) => {
     e.preventDefault();
-
 
     // Collect all validation errors before sending data to the server
     const newErrors = {
@@ -65,13 +58,11 @@ function TaxRequestForm({
       description: "",
     };
 
-
     // Make sure the request has a title
     if (!title.trim()) {
       newErrors.title =
         "Request title is required.";
     }
-
 
     // Make sure the request has a valid description
     if (!description.trim()) {
@@ -82,10 +73,8 @@ function TaxRequestForm({
         "Description must be at least 5 characters.";
     }
 
-
     // Show all validation errors found in the current form
     setValidationErrors(newErrors);
-
 
     // Stop the request when at least one field is invalid
     if (
@@ -95,7 +84,6 @@ function TaxRequestForm({
     ) {
       return;
     }
-
 
     try {
       // Update the existing request when editing
@@ -115,18 +103,15 @@ function TaxRequestForm({
         });
       }
 
-
       // Clear the form after a successful save
       setTitle("");
       setDescription("");
-
 
       // Clear validation errors after a successful save
       setValidationErrors({
         title: "",
         description: "",
       });
-
 
       // Let the parent refresh the request list
       onRequestCreated();
@@ -136,10 +121,10 @@ function TaxRequestForm({
     }
   };
 
-
   return (
     <div
-      className="form-container"
+      className="form-container tax-request-form"
+      dir="ltr"
       style={{
         marginBottom: "40px",
       }}
@@ -150,7 +135,6 @@ function TaxRequestForm({
           ? "Edit Tax Request"
           : "Create Tax Request"}
       </h2>
-
 
       <form
         onSubmit={handleSubmit}
@@ -163,7 +147,6 @@ function TaxRequestForm({
           onChange={(e) => {
             setTitle(e.target.value);
 
-
             // Clear only the title error while the user corrects it
             setValidationErrors({
               ...validationErrors,
@@ -173,7 +156,6 @@ function TaxRequestForm({
           required
         />
 
-
         {/* Show the validation error for the title field */}
         {validationErrors.title && (
           <p className="error-message">
@@ -181,13 +163,11 @@ function TaxRequestForm({
           </p>
         )}
 
-
         <textarea
           placeholder="Description"
           value={description}
           onChange={(e) => {
             setDescription(e.target.value);
-
 
             // Clear only the description error while the user corrects it
             setValidationErrors({
@@ -207,14 +187,12 @@ function TaxRequestForm({
           }}
         />
 
-
         {/* Show the validation error for the description field */}
         {validationErrors.description && (
           <p className="error-message">
             {validationErrors.description}
           </p>
         )}
-
 
         <button
           type="submit"
@@ -232,6 +210,5 @@ function TaxRequestForm({
     </div>
   );
 }
-
 
 export default TaxRequestForm;
