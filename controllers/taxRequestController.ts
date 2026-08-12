@@ -40,8 +40,8 @@ export const getAllTaxRequests = async (
   try {
     // Get only requests that belong to the logged-in user
     const requests = await TaxRequest.find({
-      user: req.user?.userId,
-    });
+    user: req.user?.userId,
+    }).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,

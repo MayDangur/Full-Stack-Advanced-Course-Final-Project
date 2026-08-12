@@ -6,16 +6,21 @@ import {
 import { GoogleLogin } from "@react-oauth/google";
 
 
+
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 
+
 function Register() {
+  // Used to navigate after a successful Google registration
   const navigate = useNavigate();
+
 
 
   // Use the shared authentication context
   const { login } = useAuth();
+
 
 
   // Store all registration form fields
@@ -27,15 +32,40 @@ function Register() {
   });
 
 
+
+  // Store a separate client-side validation error for each field
+  const [validationErrors, setValidationErrors] =
+    useState({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
+
+
+
   // Update the matching field while the user types
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    const { name, value } = e.target;
+
+
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
+    });
+
+
+
+    // Clear only the validation error of the field being changed
+    setValidationErrors({
+      ...validationErrors,
+      [name]: "",
     });
   };
+
 
 
   // Handle the registration form submission
@@ -45,14 +75,86 @@ function Register() {
     e.preventDefault();
 
 
-    // Make sure both password fields match
-    if (
-      formData.password !==
-      formData.confirmPassword
+
+    // Collect all validation errors before sending data to the server
+    const newErrors = {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    };
+
+
+
+    // Make sure the user entered a name
+    if (!formData.name.trim()) {
+      newErrors.name =
+        "Full name is required.";
+    }
+
+
+
+    // Make sure the user entered a valid email address
+    if (!formData.email.trim()) {
+      newErrors.email =
+        "Email is required.";
+    } else {
+      const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+
+      if (!emailPattern.test(formData.email)) {
+        newErrors.email =
+          "Please enter a valid email address.";
+      }
+    }
+
+
+
+    // Make sure the user entered a valid password
+    if (!formData.password) {
+      newErrors.password =
+        "Password is required.";
+    } else if (
+      formData.password.length < 6
     ) {
-      alert("Passwords do not match");
+      newErrors.password =
+        "Password must be at least 6 characters.";
+    }
+
+
+
+    // Make sure the confirmation password was entered
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword =
+        "Please confirm your password.";
+    } else if (
+      formData.password &&
+      formData.password !==
+        formData.confirmPassword
+    ) {
+      // Make sure both password fields match
+      newErrors.confirmPassword =
+        "Passwords do not match.";
+    }
+
+
+
+    // Show all validation errors found in the current form
+    setValidationErrors(newErrors);
+
+
+
+    // Stop registration when at least one field is invalid
+    if (
+      Object.values(newErrors).some(
+        (error) => error !== ""
+      )
+    ) {
       return;
     }
+
 
 
     try {
@@ -67,15 +169,18 @@ function Register() {
       );
 
 
+
       // Show the success message returned by the server
       alert(response.data.message);
     } catch (error: any) {
+      // Show an error returned by the server
       alert(
         error.response?.data?.message ||
           "Registration failed"
       );
     }
   };
+
 
 
   // Handle a successful response from Google
@@ -92,6 +197,7 @@ function Register() {
       }
 
 
+
       // Send the Google credential to the backend for verification
       const response = await api.post(
         "/auth/google",
@@ -101,6 +207,7 @@ function Register() {
       );
 
 
+
       // Google registration uses the same auth context as Google login
       login(
         response.data.user,
@@ -108,11 +215,16 @@ function Register() {
       );
 
 
+
+      // Show a success message after Google registration
       alert("Google registration successful!");
 
 
+
+      // Continue to the user's personal area
       navigate("/personal-area");
     } catch (error: any) {
+      // Show an error returned during Google registration
       alert(
         error.response?.data?.message ??
           "Google registration failed"
@@ -121,24 +233,29 @@ function Register() {
   };
 
 
+
   // Handle errors returned directly by Google Login
   const handleGoogleError = () => {
     alert("Google registration failed");
   };
 
 
+
   return (
     <>
+      {/* Main navigation */}
       <nav className="navbar">
         <div className="logo">
           TaxWise Israel 📈
         </div>
 
 
+
         <div className="nav-controls">
           <Link to="/" className="btn-text">
             Home
           </Link>
+
 
 
           <Link
@@ -151,9 +268,12 @@ function Register() {
       </nav>
 
 
+
+      {/* Registration page */}
       <section className="hero-section">
         <div className="form-container">
           <h1>Create Your Account</h1>
+
 
 
           <p className="form-subtitle">
@@ -162,8 +282,12 @@ function Register() {
           </p>
 
 
+
           {/* Registration form */}
-          <form onSubmit={handleSubmit}>
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+          >
             <input
               type="text"
               name="name"
@@ -171,6 +295,16 @@ function Register() {
               value={formData.name}
               onChange={handleChange}
             />
+
+
+
+            {/* Show the validation error for the name field */}
+            {validationErrors.name && (
+              <p className="error-message">
+                {validationErrors.name}
+              </p>
+            )}
+
 
 
             <input
@@ -182,6 +316,16 @@ function Register() {
             />
 
 
+
+            {/* Show the validation error for the email field */}
+            {validationErrors.email && (
+              <p className="error-message">
+                {validationErrors.email}
+              </p>
+            )}
+
+
+
             <input
               type="password"
               name="password"
@@ -189,6 +333,16 @@ function Register() {
               value={formData.password}
               onChange={handleChange}
             />
+
+
+
+            {/* Show the validation error for the password field */}
+            {validationErrors.password && (
+              <p className="error-message">
+                {validationErrors.password}
+              </p>
+            )}
+
 
 
             <input
@@ -200,6 +354,18 @@ function Register() {
             />
 
 
+
+            {/* Show the validation error for the confirmation field */}
+            {validationErrors.confirmPassword && (
+              <p className="error-message">
+                {
+                  validationErrors.confirmPassword
+                }
+              </p>
+            )}
+
+
+
             <button
               type="submit"
               className="btn-primary"
@@ -207,6 +373,7 @@ function Register() {
               Register
             </button>
           </form>
+
 
 
           {/* Alternative registration using a Google account */}
@@ -226,6 +393,7 @@ function Register() {
             </p>
 
 
+
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}
@@ -233,6 +401,8 @@ function Register() {
           </div>
 
 
+
+          {/* Link for users who already have an account */}
           <p className="form-link">
             Already have an account?{" "}
             <Link to="/login">
@@ -244,6 +414,7 @@ function Register() {
     </>
   );
 }
+
 
 
 export default Register;
