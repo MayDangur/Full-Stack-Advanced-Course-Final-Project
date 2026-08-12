@@ -217,10 +217,20 @@ function PersonalArea() {
           TaxWise Israel 📈
         </div>
 
-        <div className="nav-controls">
+        <div
+          className="nav-controls"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "14px",
+          }}
+        >
           <Link
             to="/"
             className="btn-text"
+            style={{
+              marginLeft: "0",
+            }}
           >
             Home
           </Link>
@@ -230,7 +240,7 @@ function PersonalArea() {
             className="btn-filled"
             onClick={logout}
           >
-            Logout
+            ↪ Logout
           </Link>
         </div>
       </nav>
@@ -293,7 +303,7 @@ function PersonalArea() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: "10px",
+              gap: "8px",
             }}
           >
             {/* Keep the native file input hidden and open it from the styled button */}
@@ -329,7 +339,13 @@ function PersonalArea() {
                 uploadingProfileImage
               }
               style={{
-                minWidth: "220px",
+                minWidth: "145px",
+                padding: "7px 13px",
+                background: "white",
+                color: "#1e293b",
+                border: "1px solid #cbd5e1",
+                borderRadius: "7px",
+                fontSize: "12px",
               }}
             >
               {uploadingProfileImage
@@ -345,15 +361,16 @@ function PersonalArea() {
                 onClick={removeProfileImage}
                 className="profile-remove-button"
                 style={{
-                  background: "#ef4444",
-                  color: "white",
-                  border: "none",
-                  padding: "14px 35px",
-                  borderRadius: "8px",
+                  minWidth: "145px",
+                  padding: "7px 13px",
+                  background: "white",
+                  color: "#1e293b",
+                  border: "1px solid #ef4444",
+                  borderRadius: "7px",
                   fontWeight: "600",
                   fontFamily: "inherit",
+                  fontSize: "12px",
                   cursor: "pointer",
-                  minWidth: "220px",
                 }}
               >
                 🗑 Remove Profile Image
@@ -372,11 +389,21 @@ function PersonalArea() {
         <div
           style={{
             textAlign: "center",
+            marginTop: "28px",
             marginBottom: "40px",
           }}
         >
           <button
             className="btn-primary"
+            style={{
+              minWidth: "180px",
+              padding: "11px 22px",
+              background: "#00bfa5",
+              color: "white",
+              border: "1px solid #00bfa5",
+              borderRadius: "8px",
+              fontWeight: "600",
+            }}
             onClick={() => {
               // Clear edit mode when closing the form
               if (showForm) {

@@ -8,6 +8,14 @@
 * { box-sizing: border-box; }
 body { margin: 0; font-family: 'Assistant', sans-serif; direction: rtl; color: var(--text-main); }
 
+/* Keep typography consistent across all interactive elements */
+button,
+input,
+textarea,
+select {
+font-family: inherit;
+}
+
 /* Navbar */
 .navbar { display: flex; justify-content: space-between; padding: 20px 8%; align-items: center; border-bottom: 1px solid #f1f5f9; background: #fff; }
 .btn-filled { background: var(--primary-teal); color: white; padding: 8px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; }
