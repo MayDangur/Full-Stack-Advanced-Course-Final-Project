@@ -47,7 +47,7 @@ export function AuthProvider({
   // Restore the saved token when the app starts
   const [token, setToken] = useState<
     string | null
-  >(localStorage.getItem("token"));
+  >(sessionStorage.getItem("token"));
 
   // Used while checking the current authentication state
   const [loading, setLoading] =
@@ -75,7 +75,7 @@ export function AuthProvider({
         setUser(response.data.user);
       } catch (error) {
         // Clear the session if the saved token is no longer valid
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
         setToken(null);
         setUser(null);
       } finally {
@@ -91,7 +91,7 @@ export function AuthProvider({
     user: User,
     token: string
   ) => {
-    localStorage.setItem("token", token);
+    sessionStorage.setItem("token", token);
 
     setUser(user);
     setToken(token);
@@ -104,7 +104,7 @@ export function AuthProvider({
 
   // Clear all authentication data on logout
   const logout = () => {
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
 
     setUser(null);
     setToken(null);

@@ -73,6 +73,18 @@ function PersonalArea() {
   const [editingRequest, setEditingRequest] =
     useState<TaxRequest | null>(null);
 
+  // Controls the profile image removal confirmation
+  const [
+    showRemoveImageConfirmation,
+    setShowRemoveImageConfirmation,
+  ] = useState(false);
+
+  // Stores the request waiting for delete confirmation
+  const [
+    requestToDelete,
+    setRequestToDelete,
+  ] = useState<string | null>(null);
+
   // Load the user's tax requests from the server
   const loadRequests = async () => {
     try {
@@ -146,13 +158,6 @@ function PersonalArea() {
 
   // Remove the current user's profile image
   const removeProfileImage = async () => {
-    const confirmRemove =
-      window.confirm(
-        "Are you sure you want to remove your profile image?"
-      );
-
-    if (!confirmRemove) return;
-
     try {
       setError("");
 
@@ -164,6 +169,7 @@ function PersonalArea() {
       updateUser(data.user);
 
       setProfileImageFile(null);
+      setShowRemoveImageConfirmation(false);
     } catch (err) {
       console.error(err);
 
@@ -177,17 +183,12 @@ function PersonalArea() {
   const deleteRequest = async (
     id: string
   ) => {
-    const confirmDelete =
-      window.confirm(
-        "Are you sure you want to delete this request?\n\nDeleting this request will also permanently delete all attached documents."
-      );
-
-    if (!confirmDelete) return;
-
     try {
       await api.delete(
         `/tax-requests/${id}`
       );
+
+      setRequestToDelete(null);
 
       // Refresh the list after a successful delete
       loadRequests();
@@ -358,7 +359,11 @@ function PersonalArea() {
             {user?.profileImage && (
               <button
                 type="button"
-                onClick={removeProfileImage}
+                onClick={() =>
+                  setShowRemoveImageConfirmation(
+                    true
+                  )
+                }
                 className="profile-remove-button"
                 style={{
                   minWidth: "145px",
@@ -375,6 +380,75 @@ function PersonalArea() {
               >
                 🗑 Remove Profile Image
               </button>
+            )}
+
+            {showRemoveImageConfirmation && (
+              <div
+                style={{
+                  marginTop: "10px",
+                  padding: "16px",
+                  border: "1px solid #fecaca",
+                  borderRadius: "8px",
+                  background: "#fff7f7",
+                  maxWidth: "360px",
+                  width: "100%",
+                }}
+              >
+                <p
+                  style={{
+                    margin: "0 0 14px",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                  }}
+                >
+                  Are you sure you want to
+                  remove your profile image?
+                </p>
+
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "10px",
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowRemoveImageConfirmation(
+                        false
+                      )
+                    }
+                    style={{
+                      padding: "7px 14px",
+                      background: "white",
+                      color: "#1e293b",
+                      border: "1px solid #cbd5e1",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={
+                      removeProfileImage
+                    }
+                    style={{
+                      padding: "7px 14px",
+                      background: "#ef4444",
+                      color: "white",
+                      border: "1px solid #ef4444",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Remove Image
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -453,7 +527,7 @@ function PersonalArea() {
                   setShowForm(true);
                 }}
                 onDelete={() =>
-                  deleteRequest(
+                  setRequestToDelete(
                     request._id
                   )
                 }
@@ -461,6 +535,86 @@ function PersonalArea() {
             ))
           )}
         </div>
+
+        {requestToDelete && (
+          <div
+            style={{
+              maxWidth: "520px",
+              margin: "30px auto 0",
+              padding: "20px",
+              border: "1px solid #fecaca",
+              borderRadius: "10px",
+              background: "#fff7f7",
+              textAlign: "center",
+            }}
+          >
+            <p
+              style={{
+                margin: "0 0 8px",
+                fontWeight: "600",
+              }}
+            >
+              Are you sure you want to
+              delete this request?
+            </p>
+
+            <p
+              style={{
+                margin: "0 0 16px",
+                color: "#64748b",
+                fontSize: "14px",
+              }}
+            >
+              Deleting this request will
+              also permanently delete all
+              attached documents.
+            </p>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "10px",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() =>
+                  setRequestToDelete(null)
+                }
+                style={{
+                  padding: "8px 16px",
+                  background: "white",
+                  color: "#1e293b",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  deleteRequest(
+                    requestToDelete
+                  )
+                }
+                style={{
+                  padding: "8px 16px",
+                  background: "#ef4444",
+                  color: "white",
+                  border: "1px solid #ef4444",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                }}
+              >
+                Delete Request
+              </button>
+            </div>
+          </div>
+        )}
       </section>
     </>
   );

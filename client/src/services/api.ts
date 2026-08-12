@@ -16,7 +16,7 @@ const api = axios.create({
 
 // Add the JWT to authenticated requests
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
 
   // Attach the token only when the user is logged in
   if (token) {

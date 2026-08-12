@@ -8,9 +8,42 @@
 body { margin: 0; font-family: 'Assistant', sans-serif; direction: rtl; color: var(--text-main); }
 
 /* Navbar */
-.navbar { display: flex; justify-content: space-between; padding: 20px 8%; align-items: center; border-bottom: 1px solid #f1f5f9; background: #fff; }
-.btn-filled { background: var(--primary-teal); color: white; padding: 8px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; }
-.btn-text { text-decoration: none; color: var(--text-main); margin-left: 15px; }
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 8%;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fff;
+}
+
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn-filled {
+  background: var(--primary-teal);
+  color: white;
+  padding: 8px 20px;
+  border: 1px solid #000;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-text {
+  background: white;
+  color: var(--text-main);
+  padding: 8px 20px;
+  border: 1px solid #000;
+  border-radius: 6px;
+  text-decoration: none;
+  margin-left: 0;
+  cursor: pointer;
+}
 
 /* התיקון למרכוז החלק העליון */
 .hero-section {
