@@ -1,11 +1,19 @@
 :root {
-    --primary-teal: #00bfa5;
-    --bg-dark: #0f172a;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
+  --primary-teal: #00bfa5;
+  --bg-dark: #0f172a;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
 }
+
+/* Apply consistent box sizing across the application */
 * { box-sizing: border-box; }
-body { margin: 0; font-family: 'Assistant', sans-serif; direction: rtl; color: var(--text-main); }
+
+body {
+  margin: 0;
+  font-family: 'Assistant', sans-serif;
+  direction: rtl;
+  color: var(--text-main);
+}
 
 /* Navbar */
 .navbar {
@@ -17,6 +25,7 @@ body { margin: 0; font-family: 'Assistant', sans-serif; direction: rtl; color: v
   background: #fff;
 }
 
+/* Keep navigation controls aligned with consistent spacing */
 .nav-controls {
   display: flex;
   align-items: center;
@@ -45,14 +54,14 @@ body { margin: 0; font-family: 'Assistant', sans-serif; direction: rtl; color: v
   cursor: pointer;
 }
 
-/* התיקון למרכוז החלק העליון */
+/* Center the main hero content vertically and horizontally */
 .hero-section {
-    min-height: 85vh; /* תופס כמעט את כל גובה המסך הראשוני */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 0 10%;
+  min-height: 85vh; /* Use most of the initial viewport height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 10%;
 }
 
 .hero-content h1 { font-size: 3.5rem; color: var(--bg-dark); margin-bottom: 20px; }
@@ -63,80 +72,88 @@ body { margin: 0; font-family: 'Assistant', sans-serif; direction: rtl; color: v
 display: inline-block; }
 .btn-secondary { background: white; border: 1px solid #cbd5e1; padding: 14px 35px; border-radius: 8px; cursor: pointer; }
 
-/* שאר האתר */
+/* Main website sections */
 .features-section { padding: 80px 8%; background: #fff; }
 .section-title { text-align: center; font-size: 2rem; margin-bottom: 50px; }
+
+/* Display feature cards in a three-column desktop grid */
 .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
 .f-card { padding: 30px; border: 1px solid #f1f5f9; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
 
+/* Statistics section */
 .dark-stats { background: var(--bg-dark); color: white; padding: 60px 8%; display: flex; justify-content: space-between; text-align: center; }
 .stat h3 { color: var(--primary-teal); font-size: 2.2rem; margin: 0; }
 
+/* Testimonials section */
 .testimonials { padding: 80px 8%; background: #f8fafc; }
 .t-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .t-card { background: white; padding: 25px; border-radius: 12px; }
 .stars { color: #fbbf24; margin-bottom: 10px; }
 
+/* Footer */
 .main-footer { background: var(--bg-dark); color: white; padding: 50px 8% 20px; }
 .footer-grid { display: flex; justify-content: space-between; margin-bottom: 30px; }
 .footer-bottom { text-align: center; opacity: 0.5; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
-/* Register / Login Forms */
 
+/* Register / Login Forms */
 .form-container {
-    width: 100%;
-    max-width: 500px;
-    background: white;
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
 .form-container h1 {
-    text-align: center;
-    margin-bottom: 15px;
+  text-align: center;
+  margin-bottom: 15px;
 }
 
 .form-subtitle {
-    text-align: center;
-    color: var(--text-muted);
-    margin-bottom: 30px;
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 30px;
 }
 
 .form-container form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .form-container input {
-    padding: 14px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-family: inherit;
+  padding: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
 }
 
 .form-container button {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .form-link {
-    text-align: center;
-    margin-top: 20px;
+  text-align: center;
+  margin-top: 20px;
 }
 
 .form-link a {
-    color: var(--primary-teal);
-    text-decoration: none;
-    font-weight: 600;
+  color: var(--primary-teal);
+  text-decoration: none;
+  font-weight: 600;
 }
-/* Mobile responsive layout */
+
+/* Adapt multi-column sections for mobile screens */
 @media (max-width: 768px) {
+  /* Stack statistics vertically on smaller screens */
   .dark-stats {
     flex-direction: column;
     gap: 30px;
   }
 
+  /* Use a single-column layout for cards on mobile */
   .features-grid,
   .t-grid {
     grid-template-columns: 1fr;
