@@ -54,10 +54,8 @@ function PersonalArea() {
     useState("");
 
   // Stores the selected profile image before uploading
-  const [
-    profileImageFile,
-    setProfileImageFile,
-  ] = useState<File | null>(null);
+const [, setProfileImageFile] =
+  useState<File | null>(null);
 
   // Used while a profile image is being uploaded
   const [
