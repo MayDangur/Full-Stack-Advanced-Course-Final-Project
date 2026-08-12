@@ -5,27 +5,15 @@ import {
 } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 
-
-
-
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
-
-
-
 
 function Register() {
   // Used to navigate after a successful Google registration
   const navigate = useNavigate();
 
-
-
-
   // Use the shared authentication context
   const { login } = useAuth();
-
-
-
 
   // Store all registration form fields
   const [formData, setFormData] = useState({
@@ -34,9 +22,6 @@ function Register() {
     password: "",
     confirmPassword: "",
   });
-
-
-
 
   // Store a separate client-side validation error for each field
   const [validationErrors, setValidationErrors] =
@@ -47,22 +32,13 @@ function Register() {
       confirmPassword: "",
     });
 
-
-
-
   // Store a success message to display inside the interface
   const [successMessage, setSuccessMessage] =
     useState("");
 
-
-
-
   // Store server errors to display inside the interface
   const [serverError, setServerError] =
     useState("");
-
-
-
 
   // Update the matching field while the user types
   const handleChange = (
@@ -70,16 +46,10 @@ function Register() {
   ) => {
     const { name, value } = e.target;
 
-
-
-
     setFormData({
       ...formData,
       [name]: value,
     });
-
-
-
 
     // Clear only the validation error of the field being changed
     setValidationErrors({
@@ -87,24 +57,15 @@ function Register() {
       [name]: "",
     });
 
-
-
-
     // Clear the server error when the user changes the form
     setServerError("");
   };
-
-
-
 
   // Handle the registration form submission
   const handleSubmit = async (
     e: React.FormEvent
   ) => {
     e.preventDefault();
-
-
-
 
     // Collect all validation errors before sending data to the server
     const newErrors = {
@@ -114,17 +75,11 @@ function Register() {
       confirmPassword: "",
     };
 
-
-
-
     // Make sure the user entered a name
     if (!formData.name.trim()) {
       newErrors.name =
         "Full name is required.";
     }
-
-
-
 
     // Make sure the user entered a valid email address
     if (!formData.email.trim()) {
@@ -134,17 +89,11 @@ function Register() {
       const emailPattern =
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-
-
-
       if (!emailPattern.test(formData.email)) {
         newErrors.email =
           "Please enter a valid email address.";
       }
     }
-
-
-
 
     // Make sure the user entered a valid password
     if (!formData.password) {
@@ -156,9 +105,6 @@ function Register() {
       newErrors.password =
         "Password must be at least 6 characters.";
     }
-
-
-
 
     // Make sure the confirmation password was entered
     if (!formData.confirmPassword) {
@@ -174,14 +120,8 @@ function Register() {
         "Passwords do not match.";
     }
 
-
-
-
     // Show all validation errors found in the current form
     setValidationErrors(newErrors);
-
-
-
 
     // Stop registration when at least one field is invalid
     if (
@@ -191,9 +131,6 @@ function Register() {
     ) {
       return;
     }
-
-
-
 
     try {
       // Send the registration data to the backend
@@ -206,17 +143,11 @@ function Register() {
         }
       );
 
-
-
-
       // Show the success message returned by the server
       setSuccessMessage(
         response.data.message ||
           "Registration successful!"
       );
-
-
-
 
       // Continue automatically to the login page
       setTimeout(() => {
@@ -225,19 +156,17 @@ function Register() {
     } catch (error: any) {
       // Show an error returned by the server
       const serverMessage =
-      error.response?.data?.message;
+        error.response?.data?.message;
+
       setServerError(
-      serverMessage ===
-        "אימייל זה כבר קיים במערכת"
-        ? "This email is already registered."
-        : serverMessage ||
-            "Registration failed"
+        serverMessage ===
+          "אימייל זה כבר קיים במערכת"
+          ? "This email is already registered."
+          : serverMessage ||
+              "Registration failed"
       );
     }
   };
-
-
-
 
   // Handle a successful response from Google
   const handleGoogleSuccess = async (
@@ -252,9 +181,6 @@ function Register() {
         return;
       }
 
-
-
-
       // Send the Google credential to the backend for verification
       const response = await api.post(
         "/auth/google",
@@ -263,25 +189,16 @@ function Register() {
         }
       );
 
-
-
-
       // Google registration uses the same auth context as Google login
       login(
         response.data.user,
         response.data.token
       );
 
-
-
-
       // Show a success message after Google registration
       setSuccessMessage(
         "Google registration successful!"
       );
-
-
-
 
       // Continue to the user's personal area
       setTimeout(() => {
@@ -296,16 +213,10 @@ function Register() {
     }
   };
 
-
-
-
   // Handle errors returned directly by Google Login
   const handleGoogleError = () => {
     alert("Google registration failed");
   };
-
-
-
 
   return (
     <>
@@ -315,16 +226,27 @@ function Register() {
           TaxWise Israel 📈
         </div>
 
-
-
-
         <div className="nav-controls">
-          <Link to="/" className="btn-text">
+          <Link
+            to="/"
+            className="btn-text"
+          >
             Home
           </Link>
 
+          <Link
+            to="/about"
+            className="btn-text"
+          >
+            About
+          </Link>
 
-
+          <Link
+            to="/faq"
+            className="btn-text"
+          >
+            FAQ
+          </Link>
 
           <Link
             to="/login"
@@ -335,9 +257,6 @@ function Register() {
         </div>
       </nav>
 
-
-
-
       {/* Registration page */}
       <section className="hero-section">
         <div
@@ -346,16 +265,10 @@ function Register() {
         >
           <h1>Create Your Account</h1>
 
-
-
-
           <p className="form-subtitle">
             Join TaxWise and manage your tax
             refund requests easily and securely.
           </p>
-
-
-
 
           {/* Registration form */}
           <form
@@ -370,18 +283,12 @@ function Register() {
               onChange={handleChange}
             />
 
-
-
-
             {/* Show the validation error for the name field */}
             {validationErrors.name && (
               <p className="error-message">
                 {validationErrors.name}
               </p>
             )}
-
-
-
 
             <input
               type="email"
@@ -391,18 +298,12 @@ function Register() {
               onChange={handleChange}
             />
 
-
-
-
             {/* Show the validation error for the email field */}
             {validationErrors.email && (
               <p className="error-message">
                 {validationErrors.email}
               </p>
             )}
-
-
-
 
             <input
               type="password"
@@ -412,18 +313,12 @@ function Register() {
               onChange={handleChange}
             />
 
-
-
-
             {/* Show the validation error for the password field */}
             {validationErrors.password && (
               <p className="error-message">
                 {validationErrors.password}
               </p>
             )}
-
-
-
 
             <input
               type="password"
@@ -432,9 +327,6 @@ function Register() {
               value={formData.confirmPassword}
               onChange={handleChange}
             />
-
-
-
 
             {/* Show the validation error for the confirmation field */}
             {validationErrors.confirmPassword && (
@@ -445,18 +337,12 @@ function Register() {
               </p>
             )}
 
-
-
-
             {/* Show server errors inside the registration interface */}
             {serverError && (
               <p className="error-message">
                 {serverError}
               </p>
             )}
-
-
-
 
             {/* Show successful registration feedback before automatic navigation */}
             {successMessage && (
@@ -472,9 +358,6 @@ function Register() {
               </p>
             )}
 
-
-
-
             <button
               type="submit"
               className="btn-primary"
@@ -482,9 +365,6 @@ function Register() {
               Register
             </button>
           </form>
-
-
-
 
           {/* Alternative registration using a Google account */}
           <div
@@ -502,17 +382,11 @@ function Register() {
               OR
             </p>
 
-
-
-
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}
             />
           </div>
-
-
-
 
           {/* Link for users who already have an account */}
           <p className="form-link">
@@ -526,8 +400,5 @@ function Register() {
     </>
   );
 }
-
-
-
 
 export default Register;

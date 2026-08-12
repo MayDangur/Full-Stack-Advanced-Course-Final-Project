@@ -3,20 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 
 
-
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
-
 
 
 function Login() {
   const navigate = useNavigate();
 
 
-
   // Use the shared authentication context
   const { login } = useAuth();
-
 
 
   // Store the email and password entered by the user
@@ -26,17 +22,14 @@ function Login() {
   });
 
 
-
   // Store client-side validation errors
   const [validationError, setValidationError] =
     useState("");
 
 
-
   // Show a short success message before automatic navigation
   const [successMessage, setSuccessMessage] =
     useState("");
-
 
 
   // Update the matching field while the user types
@@ -49,11 +42,9 @@ function Login() {
     });
 
 
-
     // Clear the validation message when the user changes the form
     setValidationError("");
   };
-
 
 
   // Handle regular email and password login
@@ -61,7 +52,6 @@ function Login() {
     e: React.FormEvent
   ) => {
     e.preventDefault();
-
 
 
     // Validate the login form before sending it to the server
@@ -73,10 +63,8 @@ function Login() {
     }
 
 
-
     const emailPattern =
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 
 
     if (!emailPattern.test(formData.email)) {
@@ -87,14 +75,12 @@ function Login() {
     }
 
 
-
     if (!formData.password) {
       setValidationError(
         "Password is required."
       );
       return;
     }
-
 
 
     try {
@@ -105,7 +91,6 @@ function Login() {
       );
 
 
-
       // Save the authenticated user and JWT in the context
       login(
         response.data.user,
@@ -113,12 +98,10 @@ function Login() {
       );
 
 
-
       // Show success feedback without requiring the user to click anything
       setSuccessMessage(
         "Login successful!"
       );
-
 
 
       // Continue automatically to the user's personal area
@@ -132,7 +115,6 @@ function Login() {
       );
     }
   };
-
 
 
   // Handle a successful response from Google
@@ -149,7 +131,6 @@ function Login() {
       }
 
 
-
       // Send the Google credential to the backend for verification
       const response = await api.post(
         "/auth/google",
@@ -159,7 +140,6 @@ function Login() {
       );
 
 
-
       // Google login uses the same auth context as regular login
       login(
         response.data.user,
@@ -167,12 +147,10 @@ function Login() {
       );
 
 
-
       // Show success feedback without requiring the user to click anything
       setSuccessMessage(
         "Google login successful!"
       );
-
 
 
       // Continue automatically to the user's personal area
@@ -188,12 +166,10 @@ function Login() {
   };
 
 
-
   // Handle errors returned directly by Google Login
   const handleGoogleError = () => {
     alert("Google login failed");
   };
-
 
 
   return (
@@ -204,7 +180,6 @@ function Login() {
         </div>
 
 
-
         <div className="nav-controls">
           <Link
             to="/"
@@ -213,6 +188,21 @@ function Login() {
             Home
           </Link>
 
+
+          <Link
+            to="/about"
+            className="btn-text"
+          >
+            About
+          </Link>
+
+
+          <Link
+            to="/faq"
+            className="btn-text"
+          >
+            FAQ
+          </Link>
 
 
           <Link
@@ -225,7 +215,6 @@ function Login() {
       </nav>
 
 
-
       <section className="hero-section">
         {/* Keep the English login content left-to-right */}
         <div
@@ -235,12 +224,10 @@ function Login() {
           <h1>Welcome Back</h1>
 
 
-
           <p className="form-subtitle">
             Sign in to access your personal tax
             management area.
           </p>
-
 
 
           {/* Regular email and password login */}
@@ -258,7 +245,6 @@ function Login() {
             />
 
 
-
             <input
               type="password"
               name="password"
@@ -269,14 +255,12 @@ function Login() {
             />
 
 
-
             {/* Show client-side React validation errors */}
             {validationError && (
               <p className="error-message">
                 {validationError}
               </p>
             )}
-
 
 
             {/* Show successful login feedback before automatic navigation */}
@@ -294,7 +278,6 @@ function Login() {
             )}
 
 
-
             <button
               type="submit"
               className="btn-primary"
@@ -302,7 +285,6 @@ function Login() {
               Login
             </button>
           </form>
-
 
 
           {/* Alternative login using a Google account */}
@@ -322,13 +304,11 @@ function Login() {
             </p>
 
 
-
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}
             />
           </div>
-
 
 
           <p className="form-link">
@@ -342,7 +322,6 @@ function Login() {
     </>
   );
 }
-
 
 
 export default Login;

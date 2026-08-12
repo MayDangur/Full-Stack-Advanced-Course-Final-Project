@@ -27,6 +27,14 @@ const PersonalArea = lazy(
   () => import("./pages/PersonalArea")
 );
 
+const About = lazy(
+  () => import("./pages/About")
+);
+
+const FAQ = lazy(
+  () => import("./pages/FAQ")
+);
+
 const NotFound = lazy(
   () => import("./pages/NotFound")
 );
@@ -50,6 +58,16 @@ function App() {
         <Route
           path="/register"
           element={<Register />}
+        />
+
+        <Route
+          path="/about"
+          element={<About />}
+        />
+
+        <Route
+          path="/faq"
+          element={<FAQ />}
         />
 
         {/* Personal area for logged-in users only */}

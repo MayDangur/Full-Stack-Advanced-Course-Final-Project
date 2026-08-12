@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
 
+import { useAuth } from "../context/AuthContext";
 
 function Home() {
+  // Use the current authentication state to display the correct navigation
+  const { user, logout } = useAuth();
+
   // Open WhatsApp directly with a prepared message
   // for scheduling a free initial consultation
   const handleBookConsultation = () => {
@@ -21,7 +25,6 @@ function Home() {
     );
   };
 
-
   return (
     <>
       {/* Navbar */}
@@ -30,33 +33,71 @@ function Home() {
           TaxWise Israel <span>📈</span>
         </div>
 
-
         <div className="nav-controls">
-          <Link to="/login" className="btn-text">
-            Login
+          <Link
+            to="/about"
+            className="btn-text"
+          >
+            About
           </Link>
 
-
-          <Link to="/register" className="btn-filled">
-            Register
+          <Link
+            to="/faq"
+            className="btn-text"
+          >
+            FAQ
           </Link>
+
+          {user ? (
+            <>
+              <Link
+                to="/personal-area"
+                className="btn-text"
+              >
+                Personal Area
+              </Link>
+
+              <Link
+                to="/login"
+                className="btn-filled"
+                onClick={logout}
+              >
+                ↪ Logout
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="btn-text"
+              >
+                Login
+              </Link>
+
+              <Link
+                to="/register"
+                className="btn-filled"
+              >
+                Register
+              </Link>
+            </>
+          )}
         </div>
       </nav>
-
 
       {/* Hero */}
       <header className="hero-section">
         {/* Keep English content left-to-right so punctuation appears correctly */}
         <div className="hero-content" dir="ltr">
-          <h1>Smart Tax Consulting & Tax Refund Management</h1>
-
+          <h1>
+            Smart Tax Consulting & Tax Refund Management
+          </h1>
 
           <p>
             A professional platform for managing tax processes,
             refunds and declarations in a simple, fast and secure
             way.
           </p>
-
 
           <div className="hero-btns">
             <Link
@@ -65,7 +106,6 @@ function Home() {
             >
               Get Started
             </Link>
-
 
             {/* Open WhatsApp to schedule a free initial consultation */}
             <button
@@ -78,14 +118,12 @@ function Home() {
         </div>
       </header>
 
-
       {/* Features */}
       {/* Keep English content left-to-right so punctuation appears correctly */}
       <section className="features-section" dir="ltr">
         <h2 className="section-title">
           Why Choose TaxWise?
         </h2>
-
 
         <div className="features-grid">
           <div className="f-card">
@@ -97,7 +135,6 @@ function Home() {
             </p>
           </div>
 
-
           <div className="f-card">
             <div className="f-icon">⏰</div>
             <h3>Time Saving</h3>
@@ -106,7 +143,6 @@ function Home() {
               results.
             </p>
           </div>
-
 
           <div className="f-card">
             <div className="f-icon">👥</div>
@@ -117,7 +153,6 @@ function Home() {
             </p>
           </div>
 
-
           <div className="f-card">
             <div className="f-icon">📈</div>
             <h3>Maximum Refunds</h3>
@@ -127,7 +162,6 @@ function Home() {
             </p>
           </div>
 
-
           <div className="f-card">
             <div className="f-icon">📄</div>
             <h3>Document Management</h3>
@@ -136,7 +170,6 @@ function Home() {
               accessible.
             </p>
           </div>
-
 
           <div className="f-card">
             <div className="f-icon">✔️</div>
@@ -149,7 +182,6 @@ function Home() {
         </div>
       </section>
 
-
       {/* Statistics */}
       <section className="dark-stats" dir="ltr">
         <div className="stat">
@@ -157,18 +189,15 @@ function Home() {
           <p>Satisfied Clients</p>
         </div>
 
-
         <div className="stat">
           <h3>₪42M</h3>
           <p>Annual Tax Refunds</p>
         </div>
 
-
         <div className="stat">
           <h3>98%</h3>
           <p>Customer Satisfaction</p>
         </div>
-
 
         <div className="stat">
           <h3>72h</h3>
@@ -176,13 +205,11 @@ function Home() {
         </div>
       </section>
 
-
       {/* Testimonials */}
       <section className="testimonials" dir="ltr">
         <h2 className="section-title">
           What Our Clients Say
         </h2>
-
 
         <div className="t-grid">
           <div className="t-card">
@@ -191,13 +218,11 @@ function Home() {
             <strong>Danny Cohen</strong>
           </div>
 
-
           <div className="t-card">
             <div className="stars">★★★★★</div>
             <p>"The process was simple and clear."</p>
             <strong>Sarah Levy</strong>
           </div>
-
 
           <div className="t-card">
             <div className="stars">★★★★★</div>
@@ -210,13 +235,11 @@ function Home() {
         </div>
       </section>
 
-
       {/* Footer */}
       <footer className="main-footer" dir="ltr">
         <div className="footer-grid">
           <div className="f-col">
             <h4>Services</h4>
-
 
             <ul>
               <li>Tax Refunds</li>
@@ -224,16 +247,13 @@ function Home() {
             </ul>
           </div>
 
-
           <div className="f-col">
             <h4>Contact Us</h4>
-
 
             <p>03-1234567</p>
             <p>Tel Aviv, Israel</p>
           </div>
         </div>
-
 
         <div className="footer-bottom">
           © TaxWise Israel 2026. All Rights Reserved.
@@ -242,6 +262,5 @@ function Home() {
     </>
   );
 }
-
 
 export default Home;
