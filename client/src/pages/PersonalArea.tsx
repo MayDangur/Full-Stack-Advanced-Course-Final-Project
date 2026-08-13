@@ -247,7 +247,15 @@ function PersonalArea() {
           >
             FAQ
           </Link>
-
+          {/* Show admin navigation only to admin users */}
+          {user?.role === "admin" && (
+            <Link
+              to="/admin"
+              className="btn-text"
+            >
+              Admin Panel
+            </Link>
+          )}
           <Link
             to="/login"
             className="btn-filled"

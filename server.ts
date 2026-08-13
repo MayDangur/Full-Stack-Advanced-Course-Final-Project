@@ -9,6 +9,7 @@ import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/auth_routes";
 import taxRequestRoutes from "./routes/taxRequest_routes";
 import documentRoutes from "./routes/document_routes";
+import adminRoutes from "./routes/admin_routes";
 import errorHandler from "./middleware/errorHandler";
 
 // Load environment variables
@@ -90,6 +91,12 @@ app.use(
 app.use(
   "/api/documents",
   documentRoutes
+);
+
+// Admin routes
+app.use(
+  "/api/admin",
+  adminRoutes
 );
 
 // Global Error Handler

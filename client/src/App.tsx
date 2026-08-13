@@ -9,6 +9,7 @@ import {
 
 import LoadingSpinner from "./components/LoadingSpinner";
 import PrivateRoute from "./components/PrivateRoute";
+import AdminRoute from "./components/AdminRoute";
 
 // Lazy load pages only when they are needed
 const Home = lazy(
@@ -33,6 +34,10 @@ const About = lazy(
 
 const FAQ = lazy(
   () => import("./pages/FAQ")
+);
+
+const Admin = lazy(
+  () => import("./pages/Admin")
 );
 
 const NotFound = lazy(
@@ -77,6 +82,16 @@ function App() {
             <PrivateRoute>
               <PersonalArea />
             </PrivateRoute>
+          }
+        />
+
+        {/* Admin page for admin users only */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
           }
         />
 

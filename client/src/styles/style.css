@@ -434,3 +434,217 @@ display: inline-block; }
     padding: 0 18px 18px;
   }
 }
+/* Admin page */
+.admin-page {
+  min-height: 100vh;
+  padding: 70px 8%;
+  background: #f8fafc;
+  direction: ltr;
+}
+
+.admin-header {
+  max-width: 900px;
+  margin: 0 auto 45px;
+  text-align: center;
+}
+
+.admin-eyebrow {
+  margin: 0 0 10px;
+  color: var(--primary-teal);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.admin-header h1 {
+  margin: 0 0 15px;
+  color: var(--bg-dark);
+  font-size: 2.6rem;
+}
+
+.admin-header > p:last-child {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+/* Admin API error feedback */
+.admin-error {
+  max-width: 900px;
+  margin: 0 auto 25px;
+  padding: 14px 18px;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fff7f7;
+  color: #b91c1c;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Admin empty state */
+.admin-empty {
+  max-width: 700px;
+  margin: 50px auto 0;
+  padding: 40px 30px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+}
+
+.admin-empty h2 {
+  margin-top: 0;
+  color: var(--bg-dark);
+}
+
+.admin-empty p {
+  margin-bottom: 0;
+  color: var(--text-muted);
+}
+
+/* List of client requests */
+.admin-requests {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* Individual client request */
+.admin-request-card {
+  padding: 28px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+}
+
+.admin-request-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 25px;
+  margin-bottom: 20px;
+}
+
+.admin-request-top h2 {
+  margin: 0 0 8px;
+  color: var(--bg-dark);
+  font-size: 1.35rem;
+}
+
+.admin-client {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* Current request status badge */
+.admin-status {
+  flex-shrink: 0;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.admin-status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.admin-status-approved {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.admin-status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.admin-description {
+  margin: 0 0 18px;
+  color: var(--text-main);
+  line-height: 1.7;
+}
+
+.admin-date {
+  margin: 0 0 22px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* Admin request status controls */
+.admin-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.admin-actions label {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.admin-actions select {
+  min-width: 145px;
+  padding: 9px 12px;
+  background: white;
+  color: var(--text-main);
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.admin-actions select:focus {
+  outline: 2px solid rgba(0, 191, 165, 0.2);
+  border-color: var(--primary-teal);
+}
+
+.admin-actions select:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.admin-updating {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* Admin page responsive layout */
+@media (max-width: 768px) {
+  .admin-page {
+    padding: 50px 6%;
+  }
+
+  .admin-header h1 {
+    font-size: 2rem;
+  }
+
+  .admin-request-card {
+    padding: 22px 18px;
+  }
+
+  .admin-request-top {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .admin-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-actions select {
+    width: 100%;
+  }
+}
