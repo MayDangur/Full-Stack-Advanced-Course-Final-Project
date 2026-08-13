@@ -1,4 +1,8 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import api from "../services/api";
 
@@ -20,6 +24,14 @@ function TaxRequestForm({
   const [description, setDescription] =
     useState("");
 
+  // Store documents selected while creating a new request
+  const [selectedDocuments, setSelectedDocuments] =
+    useState<File[]>([]);
+
+  // Reference to the document file input
+  const documentInputRef =
+    useRef<HTMLInputElement>(null);
+
   // Store a separate client-side validation error for each field
   const [validationErrors, setValidationErrors] =
     useState({
@@ -38,6 +50,13 @@ function TaxRequestForm({
       // Start with an empty form when creating a new request
       setTitle("");
       setDescription("");
+    }
+
+    // Clear selected documents when switching forms
+    setSelectedDocuments([]);
+
+    if (documentInputRef.current) {
+      documentInputRef.current.value = "";
     }
 
     // Clear previous validation errors when switching forms
@@ -97,15 +116,52 @@ function TaxRequestForm({
         );
       } else {
         // Create a new request when the form is not in edit mode
-        await api.post("/tax-requests", {
-          title,
-          description,
-        });
+        const response = await api.post(
+          "/tax-requests",
+          {
+            title,
+            description,
+          }
+        );
+
+        const newRequestId =
+          response.data.data._id;
+
+        // Upload all documents selected with the new request
+        for (const document of selectedDocuments) {
+          const formData = new FormData();
+
+          formData.append(
+            "document",
+            document
+          );
+
+          formData.append(
+            "taxRequestId",
+            newRequestId
+          );
+
+          await api.post(
+            "/documents/upload",
+            formData,
+            {
+              headers: {
+                "Content-Type":
+                  "multipart/form-data",
+              },
+            }
+          );
+        }
       }
 
       // Clear the form after a successful save
       setTitle("");
       setDescription("");
+      setSelectedDocuments([]);
+
+      if (documentInputRef.current) {
+        documentInputRef.current.value = "";
+      }
 
       // Clear validation errors after a successful save
       setValidationErrors({
@@ -192,6 +248,64 @@ function TaxRequestForm({
           <p className="error-message">
             {validationErrors.description}
           </p>
+        )}
+
+        {/* Allow documents to be attached when creating a new request */}
+        {!editingRequest && (
+          <div
+            style={{
+              marginTop: "18px",
+            }}
+          >
+            <input
+              ref={documentInputRef}
+              id="request-documents"
+              type="file"
+              multiple
+              hidden
+              onChange={(e) => {
+                setSelectedDocuments(
+                  Array.from(
+                    e.target.files ?? []
+                  )
+                );
+              }}
+            />
+
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() =>
+                documentInputRef.current?.click()
+              }
+              style={{
+                width: "100%",
+                padding: "11px 18px",
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              📎 Attach Documents
+            </button>
+
+            {selectedDocuments.length > 0 && (
+              <div
+                style={{
+                  marginTop: "10px",
+                  color: "#64748b",
+                  fontSize: "14px",
+                }}
+              >
+                {selectedDocuments.map(
+                  (document) => (
+                    <div key={document.name}>
+                      📄 {document.name}
+                    </div>
+                  )
+                )}
+              </div>
+            )}
+          </div>
         )}
 
         <button

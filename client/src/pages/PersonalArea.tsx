@@ -24,6 +24,7 @@ interface TaxRequest {
   title: string;
   description: string;
   status: "pending" | "approved" | "rejected";
+  createdAt: string;
 }
 
 function PersonalArea() {
@@ -212,8 +213,29 @@ function PersonalArea() {
   return (
     <>
       <nav className="navbar">
-        <div className="logo">
-          TaxWise Israel 📈
+        <div>
+          <Link
+            to="/"
+            className="logo"
+          >
+            TaxWise Israel 📈
+          </Link>
+
+          {user && (
+            <div
+              dir="ltr"
+              style={{
+                marginTop: "5px",
+                fontSize: "14px",
+                color: "#64748b",
+                fontWeight: "600",
+                textAlign: "left",
+              }}
+            >
+              <span>👤</span>{" "}
+              <span>User: {user.name}</span>
+            </div>
+          )}
         </div>
 
         <div
@@ -247,6 +269,7 @@ function PersonalArea() {
           >
             FAQ
           </Link>
+
           {/* Show admin navigation only to admin users */}
           {user?.role === "admin" && (
             <Link
@@ -256,6 +279,7 @@ function PersonalArea() {
               Admin Panel
             </Link>
           )}
+
           <Link
             to="/login"
             className="btn-filled"
@@ -367,6 +391,7 @@ function PersonalArea() {
                 border: "1px solid #cbd5e1",
                 borderRadius: "7px",
                 fontSize: "12px",
+                fontFamily: "inherit",
               }}
             >
               {uploadingProfileImage
@@ -497,6 +522,7 @@ function PersonalArea() {
               border: "1px solid #00bfa5",
               borderRadius: "8px",
               fontWeight: "600",
+              fontFamily: "inherit",
             }}
             onClick={() => {
               // Clear edit mode when closing the form

@@ -55,6 +55,17 @@ function Login() {
 
 
     // Validate the login form before sending it to the server
+    if (
+      !formData.email.trim() &&
+      !formData.password
+    ) {
+      setValidationError(
+        "Email and password are required."
+      );
+      return;
+    }
+
+
     if (!formData.email.trim()) {
       setValidationError(
         "Email is required."
@@ -109,10 +120,19 @@ function Login() {
         navigate("/personal-area");
       }, 700);
     } catch (error: any) {
-      alert(
-        error.response?.data?.message ??
-          "Login failed"
-      );
+      if (
+        error.response?.data?.message ===
+        "Invalid credentials"
+      ) {
+        setValidationError(
+          "Incorrect email or password. Please try again."
+        );
+      } else {
+        setValidationError(
+          error.response?.data?.message ??
+            "Login failed"
+        );
+      }
     }
   };
 

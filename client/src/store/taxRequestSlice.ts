@@ -6,6 +6,7 @@ interface TaxRequest {
   title: string;
   description: string;
   status: "pending" | "approved" | "rejected";
+  createdAt: string;
 }
 
 // Shape of the tax requests state

@@ -29,8 +29,29 @@ function Home() {
     <>
       {/* Navbar */}
       <nav className="navbar">
-        <div className="logo">
-          TaxWise Israel <span>📈</span>
+        <div>
+          <Link
+            to="/"
+            className="logo"
+          >
+            TaxWise Israel <span>📈</span>
+          </Link>
+
+          {user && (
+            <div
+              dir="ltr"
+              style={{
+                marginTop: "5px",
+                fontSize: "14px",
+                color: "#64748b",
+                fontWeight: "600",
+                textAlign: "left",
+              }}
+            >
+              <span>👤</span>{" "}
+              <span>User: {user.name}</span>
+            </div>
+          )}
         </div>
 
         <div className="nav-controls">

@@ -16,6 +16,14 @@ interface RequestUser {
   email: string;
 }
 
+// Structure of a document connected to a tax request
+interface RequestDocument {
+  _id: string;
+  fileName: string;
+  filePath: string;
+  mimeType?: string;
+}
+
 // Structure of a tax request displayed in the admin panel
 interface TaxRequest {
   _id: string;
@@ -27,13 +35,17 @@ interface TaxRequest {
 }
 
 function Admin() {
-  // Use the shared logout action from AuthContext
-  const { logout } = useAuth();
+  // Use the shared authentication state and logout action from AuthContext
+  const { user, logout } = useAuth();
 
   // Store all tax requests submitted by clients
   const [requests, setRequests] = useState<
     TaxRequest[]
   >([]);
+
+  // Store documents for each tax request
+  const [documentsByRequest, setDocumentsByRequest] =
+    useState<Record<string, RequestDocument[]>>({});
 
   // Track the initial loading state
   const [loading, setLoading] =
@@ -47,6 +59,36 @@ function Admin() {
   const [updatingId, setUpdatingId] =
     useState<string | null>(null);
 
+  // Track which document is currently being downloaded
+  const [downloadingId, setDownloadingId] =
+    useState<string | null>(null);
+
+  // Load the documents connected to a specific client request
+  const fetchRequestDocuments = useCallback(
+    async (requestId: string) => {
+      try {
+        const response = await api.get(
+          `/admin/requests/${requestId}/documents`
+        );
+
+        setDocumentsByRequest(
+          (currentDocuments) => ({
+            ...currentDocuments,
+            [requestId]: response.data.data,
+          })
+        );
+      } catch (error) {
+        setDocumentsByRequest(
+          (currentDocuments) => ({
+            ...currentDocuments,
+            [requestId]: [],
+          })
+        );
+      }
+    },
+    []
+  );
+
   // Load tax requests from all clients
   const fetchRequests = useCallback(async () => {
     try {
@@ -57,7 +99,33 @@ function Admin() {
         "/admin/requests"
       );
 
-      setRequests(response.data.data);
+      // Show the oldest submitted request first
+      const sortedRequests = [
+        ...response.data.data,
+      ].sort(
+        (
+          firstRequest: TaxRequest,
+          secondRequest: TaxRequest
+        ) =>
+          new Date(
+            firstRequest.createdAt
+          ).getTime() -
+          new Date(
+            secondRequest.createdAt
+          ).getTime()
+      );
+
+      setRequests(sortedRequests);
+
+      // Load the documents connected to every client request
+      await Promise.all(
+        sortedRequests.map(
+          (request: TaxRequest) =>
+            fetchRequestDocuments(
+              request._id
+            )
+        )
+      );
     } catch (error) {
       setError(
         "Unable to load client requests."
@@ -65,12 +133,61 @@ function Admin() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fetchRequestDocuments]);
 
   // Load all client requests when the admin page opens
   useEffect(() => {
     fetchRequests();
   }, [fetchRequests]);
+
+  // Download a client document while preserving its original file name
+  const downloadDocument = async (
+    document: RequestDocument
+  ) => {
+    try {
+      setDownloadingId(document._id);
+
+      const response = await fetch(
+        document.filePath
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "Failed to download document"
+        );
+      }
+
+      const blob = await response.blob();
+
+      const blobUrl =
+        window.URL.createObjectURL(blob);
+
+      const link =
+        window.document.createElement("a");
+
+      link.href = blobUrl;
+      link.download = document.fileName;
+
+      window.document.body.appendChild(
+        link
+      );
+
+      link.click();
+      link.remove();
+
+      window.URL.revokeObjectURL(
+        blobUrl
+      );
+    } catch (error) {
+      console.error(error);
+
+      window.alert(
+        "Could not download the document."
+      );
+    } finally {
+      setDownloadingId(null);
+    }
+  };
 
   // Update the status of a client request
   const handleStatusChange = async (
@@ -116,8 +233,29 @@ function Admin() {
   return (
     <>
       <nav className="navbar">
-        <div className="logo">
-          TaxWise Israel 📈
+        <div>
+          <Link
+            to="/"
+            className="logo"
+          >
+            TaxWise Israel 📈
+          </Link>
+
+          {user && (
+            <div
+              dir="ltr"
+              style={{
+                marginTop: "5px",
+                fontSize: "14px",
+                color: "#64748b",
+                fontWeight: "600",
+                textAlign: "left",
+              }}
+            >
+              <span>👤</span>{" "}
+              <span>User: {user.name}</span>
+            </div>
+          )}
         </div>
 
         <div className="nav-controls">
@@ -227,13 +365,138 @@ function Admin() {
                   {request.description}
                 </p>
 
-                {/* Display the date the request was submitted */}
+                {/* Display the date and time the request was submitted */}
                 <p className="admin-date">
-                  Submitted:{" "}
+                  🕒 Submitted:{" "}
                   {new Date(
                     request.createdAt
-                  ).toLocaleDateString()}
+                  ).toLocaleDateString()}{" "}
+                  at{" "}
+                  {new Date(
+                    request.createdAt
+                  ).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </p>
+
+                {/* Display documents uploaded by the client */}
+                <div
+                  style={{
+                    marginTop: "20px",
+                    marginBottom: "20px",
+                  }}
+                >
+                  <h3
+                    style={{
+                      marginBottom: "10px",
+                      fontSize: "16px",
+                    }}
+                  >
+                    Documents
+                  </h3>
+
+                  {documentsByRequest[
+                    request._id
+                  ]?.length ? (
+                    documentsByRequest[
+                      request._id
+                    ].map((document) => {
+                      const canView =
+                        document.mimeType ===
+                          "application/pdf" ||
+                        document.mimeType?.startsWith(
+                          "image/"
+                        );
+
+                      return (
+                        <div
+                          key={document._id}
+                          style={{
+                            display: "flex",
+                            justifyContent:
+                              "space-between",
+                            alignItems: "center",
+                            gap: "10px",
+                            padding: "10px",
+                            marginBottom: "8px",
+                            border:
+                              "1px solid #e2e8f0",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              color: "#0f766e",
+                              fontWeight: "600",
+                              flex: 1,
+                            }}
+                          >
+                            📄{" "}
+                            {document.fileName}
+                          </span>
+
+                          {canView && (
+                            <a
+                              href={
+                                document.filePath
+                              }
+                              target="_blank"
+                              rel="noreferrer"
+                              className="btn-text"
+                            >
+                              👁 View
+                            </a>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              downloadDocument(
+                                document
+                              )
+                            }
+                            disabled={
+                              downloadingId ===
+                              document._id
+                            }
+                            className="btn-text"
+                            style={{
+                              border: "none",
+                              background:
+                                "transparent",
+                              cursor:
+                                downloadingId ===
+                                document._id
+                                  ? "wait"
+                                  : "pointer",
+                              opacity:
+                                downloadingId ===
+                                document._id
+                                  ? 0.6
+                                  : 1,
+                            }}
+                          >
+                            {downloadingId ===
+                            document._id
+                              ? "Downloading..."
+                              : "↓ Download"}
+                          </button>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p
+                      style={{
+                        color: "#64748b",
+                        fontStyle: "italic",
+                        fontSize: "14px",
+                      }}
+                    >
+                      No documents uploaded.
+                    </p>
+                  )}
+                </div>
 
                 {/* Allow the admin to change only the request status */}
                 <div className="admin-actions">

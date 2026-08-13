@@ -13,9 +13,28 @@ function About() {
     <>
       {/* Navbar */}
       <nav className="navbar">
-        <Link to="/" className="logo">
-          TaxWise Israel <span>📈</span>
-        </Link>
+        <div>
+          <Link to="/" className="logo">
+            TaxWise Israel <span>📈</span>
+          </Link>
+
+
+          {user && (
+            <div
+              dir="ltr"
+              style={{
+                marginTop: "5px",
+                fontSize: "14px",
+                color: "#64748b",
+                fontWeight: "600",
+                textAlign: "left",
+              }}
+            >
+              <span>👤</span>{" "}
+              <span>User: {user.name}</span>
+            </div>
+          )}
+        </div>
 
 
         <div className="nav-controls">

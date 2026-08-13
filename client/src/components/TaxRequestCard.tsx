@@ -9,6 +9,7 @@ interface TaxRequest {
   title: string;
   description: string;
   status: "pending" | "approved" | "rejected";
+  createdAt: string;
 }
 
 interface TaxRequestCardProps {
@@ -91,6 +92,28 @@ const TaxRequestCard = React.memo(
         </div>
 
         <p>{request.description}</p>
+
+        {/* Display the original request submission date and time */}
+        <p
+          style={{
+            color: "#64748b",
+            fontSize: "14px",
+            marginTop: "8px",
+            marginBottom: "18px",
+          }}
+        >
+          🕒 Submitted:{" "}
+          {new Date(
+            request.createdAt
+          ).toLocaleDateString()}{" "}
+          at{" "}
+          {new Date(
+            request.createdAt
+          ).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </p>
 
         {/* Upload documents for this specific tax request */}
         <UploadDocument

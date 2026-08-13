@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import TaxRequest from "../models/TaxRequest";
+import DocumentModel from "../models/Document";
 
 // Get all tax requests for the admin
 export const getAllAdminTaxRequests = async (
@@ -15,6 +16,43 @@ export const getAllAdminTaxRequests = async (
     res.status(200).json({
       success: true,
       data: requests,
+    });
+  } catch (error) {
+    const err = error as Error;
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+// Get all documents connected to a specific tax request
+export const getAdminRequestDocuments = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    // Make sure the tax request exists
+    const taxRequest = await TaxRequest.findById(
+      req.params.id
+    );
+
+    if (!taxRequest) {
+      return res.status(404).json({
+        success: false,
+        message: "Request not found",
+      });
+    }
+
+    // Get all documents connected to this tax request
+    const documents = await DocumentModel.find({
+      taxRequest: taxRequest._id,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: documents,
     });
   } catch (error) {
     const err = error as Error;
