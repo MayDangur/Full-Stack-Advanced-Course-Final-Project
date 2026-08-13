@@ -30,7 +30,7 @@ app.use(express.json());
 // Limit requests to the API
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 200,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -44,7 +44,7 @@ app.use("/api", apiLimiter);
 // Limit authentication attempts
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 50,
   standardHeaders: true,
   legacyHeaders: false,
   message: {

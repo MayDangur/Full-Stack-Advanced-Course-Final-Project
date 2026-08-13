@@ -2,6 +2,12 @@ import express from "express";
 
 import authMiddleware from "../middleware/authMiddleware";
 import profileUpload from "../middleware/profileUpload";
+import validate from "../middleware/validate";
+
+import {
+  registerSchema,
+  loginSchema,
+} from "../validation/authValidation";
 
 import {
   register,
@@ -15,10 +21,18 @@ import {
 const router = express.Router();
 
 // Register
-router.post("/register", register);
+router.post(
+  "/register",
+  validate(registerSchema),
+  register
+);
 
 // Login
-router.post("/login", login);
+router.post(
+  "/login",
+  validate(loginSchema),
+  login
+);
 
 // Google Login
 router.post("/google", googleSignin);
@@ -44,4 +58,5 @@ router.delete(
   authMiddleware,
   removeProfileImage
 );
+
 export default router;

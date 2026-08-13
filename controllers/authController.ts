@@ -1,4 +1,8 @@
-import { Request, Response } from "express";
+import {
+  Request,
+  Response,
+  NextFunction,
+} from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
@@ -47,7 +51,8 @@ const createToken = (
 // Register
 export const register = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const { name, email, password } = req.body;
@@ -83,8 +88,8 @@ export const register = async (
     // Return the user without the password
     res.status(201).json({
       success: true,
-      message: "המשתמש נרשם בהצלחה!",
-      data: {
+      message: "Registration successful!",
+        data: {
         id: newUser._id,
         name: newUser.name,
         email: newUser.email,
@@ -92,19 +97,15 @@ export const register = async (
       },
     });
   } catch (error) {
-    const err = error as Error;
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    next(error);
   }
 };
 
 // Login
 export const login = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const { email, password } = req.body;
@@ -154,19 +155,15 @@ export const login = async (
       },
     });
   } catch (error) {
-    const err = error as Error;
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    next(error);
   }
 };
 
 // Google Sign In
 export const googleSignin = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     // Credential is returned by Google on the frontend
@@ -256,23 +253,15 @@ export const googleSignin = async (
       },
     });
   } catch (error) {
-    console.error(
-      "Google authentication error:",
-      error
-    );
-
-    res.status(401).json({
-      success: false,
-      message:
-        "Google authentication failed",
-    });
+    next(error);
   }
 };
 
 // Get Current User
 export const getMe = async (
   req: AuthRequest,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     // userId was added to the request by the auth middleware
@@ -293,19 +282,15 @@ export const getMe = async (
       user,
     });
   } catch (error) {
-    const err = error as Error;
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    next(error);
   }
 };
 
 // Update Profile Image
 export const updateProfileImage = async (
   req: AuthRequest,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     // Make sure an image was uploaded
@@ -360,18 +345,15 @@ export const updateProfileImage = async (
       user,
     });
   } catch (error) {
-    const err = error as Error;
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    next(error);
   }
 };
+
 // Remove Profile Image
 export const removeProfileImage = async (
   req: AuthRequest,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     // Find the current authenticated user
@@ -429,11 +411,6 @@ export const removeProfileImage = async (
       user,
     });
   } catch (error) {
-    const err = error as Error;
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    next(error);
   }
 };

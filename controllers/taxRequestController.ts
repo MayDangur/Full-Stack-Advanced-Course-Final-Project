@@ -1,4 +1,8 @@
-import { Response, Request } from "express";
+import {
+  Response,
+  Request,
+  NextFunction,
+} from "express";
 import { AuthRequest } from "../middleware/authMiddleware";
 import TaxRequest from "../models/TaxRequest";
 import DocumentModel from "../models/Document";
@@ -7,7 +11,8 @@ import cloudinary from "../config/cloudinary";
 // CREATE
 export const createTaxRequest = async (
   req: AuthRequest,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     // Create a request and connect it to the logged-in user
@@ -23,24 +28,20 @@ export const createTaxRequest = async (
       data: taxRequest,
     });
   } catch (error) {
-    const err = error as Error;
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    next(error);
   }
 };
 
 // GET ALL (Only current user's requests)
 export const getAllTaxRequests = async (
   req: AuthRequest,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     // Get only requests that belong to the logged-in user
     const requests = await TaxRequest.find({
-    user: req.user?.userId,
+      user: req.user?.userId,
     }).sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -48,19 +49,15 @@ export const getAllTaxRequests = async (
       data: requests,
     });
   } catch (error) {
-    const err = error as Error;
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    next(error);
   }
 };
 
 // GET BY ID
 export const getTaxRequestById = async (
   req: AuthRequest,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     // Find the request only if it belongs to the current user
@@ -81,19 +78,15 @@ export const getTaxRequestById = async (
       data: request,
     });
   } catch (error) {
-    const err = error as Error;
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    next(error);
   }
 };
 
 // UPDATE
 export const updateTaxRequest = async (
   req: AuthRequest,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     // Update only a request owned by the logged-in user
@@ -125,19 +118,15 @@ export const updateTaxRequest = async (
       data: updated,
     });
   } catch (error) {
-    const err = error as Error;
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    next(error);
   }
 };
 
 // DELETE
 export const deleteTaxRequest = async (
   req: AuthRequest,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     // Find the request first and make sure it belongs to the logged-in user
@@ -185,11 +174,6 @@ export const deleteTaxRequest = async (
         "Request and attached documents deleted successfully",
     });
   } catch (error) {
-    const err = error as Error;
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    next(error);
   }
 };

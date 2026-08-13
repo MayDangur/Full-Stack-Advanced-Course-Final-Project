@@ -584,80 +584,57 @@ function PersonalArea() {
 
         {requestToDelete && (
           <div
-            style={{
-              maxWidth: "520px",
-              margin: "30px auto 0",
-              padding: "20px",
-              border: "1px solid #fecaca",
-              borderRadius: "10px",
-              background: "#fff7f7",
-              textAlign: "center",
-            }}
+            className="confirmation-modal-overlay"
+            onClick={() =>
+              setRequestToDelete(null)
+            }
           >
-            <p
-              style={{
-                margin: "0 0 8px",
-                fontWeight: "600",
-              }}
-            >
-              Are you sure you want to
-              delete this request?
-            </p>
-
-            <p
-              style={{
-                margin: "0 0 16px",
-                color: "#64748b",
-                fontSize: "14px",
-              }}
-            >
-              Deleting this request will
-              also permanently delete all
-              attached documents.
-            </p>
-
             <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                gap: "10px",
-              }}
+              className="confirmation-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="delete-request-title"
+              onClick={(e) =>
+                e.stopPropagation()
+              }
             >
-              <button
-                type="button"
-                onClick={() =>
-                  setRequestToDelete(null)
-                }
-                style={{
-                  padding: "8px 16px",
-                  background: "white",
-                  color: "#1e293b",
-                  border: "1px solid #cbd5e1",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                }}
+              <p
+                id="delete-request-title"
+                className="confirmation-modal-title"
               >
-                Cancel
-              </button>
+                Are you sure you want to
+                delete this request?
+              </p>
 
-              <button
-                type="button"
-                onClick={() =>
-                  deleteRequest(
-                    requestToDelete
-                  )
-                }
-                style={{
-                  padding: "8px 16px",
-                  background: "#ef4444",
-                  color: "white",
-                  border: "1px solid #ef4444",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                }}
-              >
-                Delete Request
-              </button>
+              <p className="confirmation-modal-message">
+                Deleting this request will
+                also permanently delete all
+                attached documents.
+              </p>
+
+              <div className="confirmation-modal-actions">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setRequestToDelete(null)
+                  }
+                  className="confirmation-modal-cancel"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    deleteRequest(
+                      requestToDelete
+                    )
+                  }
+                  className="confirmation-modal-delete"
+                >
+                  Delete Request
+                </button>
+              </div>
             </div>
           </div>
         )}

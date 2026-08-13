@@ -17,16 +17,21 @@ https://taxwise-backend.onrender.com
 * User registration and login
 * Google authentication
 * JWT-based authentication
+* Role-based authorization for users and administrators
 * Protected client and server routes
 * Personal user area
+* Admin Panel for managing client tax requests
 * Create, read, update and delete tax requests
 * Tax request status tracking
+* Admin approval and rejection of tax requests
+* Admin access to client request documents
 * Upload, view, download and delete documents
 * Upload, update and remove profile images
-* Form validation
+* Client-side React form validation
+* Server-side JOI validation
 * Loading and error states
 * Responsive user interface
-* Session-based authentication behavior
+* Persistent authentication during the browser session
 
 ## Tech Stack
 
@@ -68,6 +73,8 @@ The frontend is built as a React Single Page Application and contains pages, reu
 
 The backend follows a structured architecture using routes, middleware, controllers, models, validation, and database configuration.
 
+Business logic is separated into controllers, while route files are responsible for defining API endpoints and applying the appropriate middleware.
+
 ## Authentication
 
 Authentication is implemented using JWT.
@@ -75,6 +82,8 @@ Authentication is implemented using JWT.
 After login, the JWT is stored in `sessionStorage`. This allows the user to remain authenticated when refreshing the page while requiring a new login after the browser session ends.
 
 Protected routes are implemented on both the frontend and backend.
+
+The application also supports role-based authorization. Regular users can access their own personal area and resources, while administrators have access to protected administrative functionality.
 
 ## Tax Requests
 
@@ -88,6 +97,25 @@ Authenticated users can:
 
 Tax requests are stored in MongoDB and connected to their users through Mongoose relationships.
 
+## Admin Panel
+
+The application includes a protected Admin Panel for administrative request management.
+
+Administrators can:
+
+* View tax requests submitted by all clients
+* View basic client information associated with each request
+* View documents associated with client requests
+* Update request status
+* Approve requests
+* Reject requests
+
+Administrative functionality is protected on both the frontend and backend.
+
+Backend admin routes require authentication and administrator authorization before the relevant controller is executed.
+
+Regular users cannot access the Admin Panel or its protected API functionality.
+
 ## Documents
 
 Users can upload documents related to their tax requests.
@@ -99,6 +127,10 @@ Supported document functionality includes:
 * Download
 * Delete
 
+Documents are connected to their corresponding tax requests in MongoDB and stored using Cloudinary.
+
+Document operations verify that the relevant tax request belongs to the authenticated user.
+
 Deleting a tax request also removes its associated documents.
 
 ## Profile Image
@@ -109,18 +141,25 @@ Users can:
 * Replace an existing profile image
 * Remove their profile image
 
+Profile images are stored using Cloudinary and associated with the authenticated user.
+
 ## Validation and Security
 
 The application includes:
 
 * React form validation
 * Server-side JOI validation
+* JOI validation for tax requests
+* JOI validation for regular registration and login
 * Password hashing with bcrypt
 * JWT verification
 * Protected API routes
+* Role-based admin authorization
 * Global error handling
 * Helmet security headers
 * Rate limiting
+
+Unexpected controller errors are forwarded to a centralized global error-handling middleware, providing consistent server-side error handling.
 
 ## Performance
 
@@ -157,18 +196,18 @@ npm install
 
 Create the required `.env` files and configure the environment variables used by the project.
 
-Examples of required configuration include:
+Examples of required backend configuration include:
 
-
+```env
 MONGO_URI=
 JWT_SECRET=
 ```
 
 Frontend configuration may include:
 
-
+```env
 VITE_API_URL=
-
+```
 
 Additional authentication and media-service environment variables should also be configured according to the project's local environment.
 
@@ -186,4 +225,4 @@ npm run dev
 
 ## Final Project
 
-This project demonstrates an end-to-end Full Stack application using React, Node.js, Express, MongoDB, authentication, state management, media handling, validation, security, and cloud deployment.
+This project demonstrates an end-to-end Full Stack application using React, Node.js, Express, MongoDB, authentication, authorization, state management, media handling, validation, security, administration functionality, and cloud deployment.

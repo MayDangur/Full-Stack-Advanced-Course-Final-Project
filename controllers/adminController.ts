@@ -1,11 +1,12 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import TaxRequest from "../models/TaxRequest";
 import DocumentModel from "../models/Document";
 
 // Get all tax requests for the admin
 export const getAllAdminTaxRequests = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     // Get requests from all users and include basic client information
@@ -18,19 +19,15 @@ export const getAllAdminTaxRequests = async (
       data: requests,
     });
   } catch (error) {
-    const err = error as Error;
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    next(error);
   }
 };
 
 // Get all documents connected to a specific tax request
 export const getAdminRequestDocuments = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     // Make sure the tax request exists
@@ -55,19 +52,15 @@ export const getAdminRequestDocuments = async (
       data: documents,
     });
   } catch (error) {
-    const err = error as Error;
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    next(error);
   }
 };
 
 // Update only the status of a tax request
 export const updateTaxRequestStatus = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const { status } = req.body;
@@ -109,11 +102,6 @@ export const updateTaxRequestStatus = async (
       data: updatedRequest,
     });
   } catch (error) {
-    const err = error as Error;
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    next(error);
   }
 };
