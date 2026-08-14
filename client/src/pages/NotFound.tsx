@@ -3,12 +3,15 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function NotFound() {
+  // Get the current authenticated user from the shared auth context
   const { user } = useAuth();
 
   return (
     <>
+      {/* Navigation bar displayed on the 404 page */}
       <nav className="navbar">
         <div>
+          {/* Logo links back to the home page */}
           <Link
             to="/"
             className="logo"
@@ -16,6 +19,7 @@ function NotFound() {
             TaxWise Israel 📈
           </Link>
 
+          {/* Show the logged-in user's name when a user is authenticated */}
           {user && (
             <div
               dir="ltr"
@@ -33,6 +37,7 @@ function NotFound() {
           )}
         </div>
 
+        {/* Provide a quick way to return to the home page */}
         <div className="nav-controls">
           <Link
             to="/"
@@ -43,11 +48,13 @@ function NotFound() {
         </div>
       </nav>
 
+      {/* Main 404 error content */}
       <section className="hero-section">
         <div
           className="form-container"
           dir="ltr"
         >
+          {/* Display the HTTP-style not found error code */}
           <h1
             style={{
               fontSize: "4rem",
@@ -57,6 +64,7 @@ function NotFound() {
             404
           </h1>
 
+          {/* Explain that the requested page could not be found */}
           <h2
             style={{
               marginBottom: "20px",
@@ -70,6 +78,7 @@ function NotFound() {
             does not exist.
           </p>
 
+          {/* Allow the user to recover by navigating back to the home page */}
           <Link
             to="/"
             className="btn-primary"
