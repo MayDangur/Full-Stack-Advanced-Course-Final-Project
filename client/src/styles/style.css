@@ -32,6 +32,12 @@ body {
   gap: 14px;
 }
 
+.logo,
+.logo:visited {
+  color: var(--text-main);
+  text-decoration: none;
+}
+
 .btn-filled {
   background: var(--primary-teal);
   color: white;
@@ -130,6 +136,31 @@ display: inline-block; }
   font-family: inherit;
 }
 
+/* Password visibility toggle */
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 48px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  margin: 0 !important;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
 .form-container button {
   margin-top: 10px;
 }
@@ -145,24 +176,6 @@ display: inline-block; }
   font-weight: 600;
 }
 
-/* Adapt multi-column sections for mobile screens */
-@media (max-width: 768px) {
-  /* Stack statistics vertically on smaller screens */
-  .dark-stats {
-    flex-direction: column;
-    gap: 30px;
-  }
-
-  /* Use a single-column layout for cards on mobile */
-  .features-grid,
-  .t-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .t-card {
-    width: 100%;
-  }
-}
 /* About page */
 .about-hero {
   padding: 90px 8%;
@@ -275,20 +288,6 @@ display: inline-block; }
   opacity: 0.85;
 }
 
-/* About page responsive layout */
-@media (max-width: 768px) {
-  .about-hero {
-    padding: 60px 6%;
-  }
-
-  .about-content h1 {
-    font-size: 2.2rem;
-  }
-
-  .steps-grid {
-    grid-template-columns: 1fr;
-  }
-}
 /* FAQ page */
 .faq-page {
   background: #f8fafc;
@@ -412,28 +411,6 @@ display: inline-block; }
   line-height: 1.7;
 }
 
-/* FAQ responsive layout */
-@media (max-width: 768px) {
-  .faq-hero {
-    padding: 60px 6% 35px;
-  }
-
-  .faq-hero h1 {
-    font-size: 2.2rem;
-  }
-
-  .faq-section {
-    padding: 10px 6% 60px;
-  }
-
-  .faq-question {
-    padding: 18px;
-  }
-
-  .faq-answer p {
-    padding: 0 18px 18px;
-  }
-}
 /* Admin page */
 .admin-page {
   min-height: 100vh;
@@ -620,34 +597,6 @@ display: inline-block; }
   font-size: 0.9rem;
 }
 
-/* Admin page responsive layout */
-@media (max-width: 768px) {
-  .admin-page {
-    padding: 50px 6%;
-  }
-
-  .admin-header h1 {
-    font-size: 2rem;
-  }
-
-  .admin-request-card {
-    padding: 22px 18px;
-  }
-
-  .admin-request-top {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .admin-actions {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .admin-actions select {
-    width: 100%;
-  }
-}
 /* Confirmation modal */
 .confirmation-modal-overlay {
   position: fixed;
@@ -713,16 +662,57 @@ display: inline-block; }
   border: 1px solid #ef4444;
 }
 
+/* Responsive breakpoints (all 768px / 480px blocks merged, no rules removed) */
+@media (max-width: 768px) {
+  /* Stack statistics vertically on smaller screens */
+  .dark-stats { flex-direction: column; gap: 30px; }
+  /* Use a single-column layout for cards on mobile */
+  .features-grid, .t-grid { grid-template-columns: 1fr; }
+  .t-card { width: 100%; }
+  /* About page responsive layout */
+  .about-hero { padding: 60px 6%; }
+  .about-content h1 { font-size: 2.2rem; }
+  .steps-grid { grid-template-columns: 1fr; }
+  /* FAQ responsive layout */
+  .faq-hero { padding: 60px 6% 35px; }
+  .faq-hero h1 { font-size: 2.2rem; }
+  .faq-section { padding: 10px 6% 60px; }
+  .faq-question { padding: 18px; }
+  .faq-answer p { padding: 0 18px 18px; }
+  /* Admin page responsive layout */
+  .admin-page { padding: 50px 6%; }
+  .admin-header h1 { font-size: 2rem; }
+  .admin-request-card { padding: 22px 18px; }
+  .admin-request-top { flex-direction: column; gap: 12px; }
+  .admin-actions { align-items: stretch; flex-direction: column; }
+  .admin-actions select { width: 100%; }
+  /* Mobile layout adjustments */
+  .navbar { padding: 14px 4%; gap: 8px; }
+  .nav-controls { gap: 8px; }
+  .btn-filled, .btn-text { padding: 7px 12px; font-size: 0.9rem; }
+  .logo { font-size: 0.9rem; }
+  .hero-section { min-height: auto; padding: 50px 5%; }
+  .form-container { max-width: 460px; padding: 30px 24px; }
+  .features-section, .testimonials, .how-it-works { padding-left: 5%; padding-right: 5%; }
+  .hero-content h1 { font-size: 2.5rem; }
+  .hero-content p { font-size: 1.1rem; }
+  .hero-btns { gap: 12px; }
+  .btn-primary, .btn-secondary { padding: 12px 24px; }
+}
+
 @media (max-width: 480px) {
-  .confirmation-modal {
-    padding: 20px 16px;
-  }
-
-  .confirmation-modal-actions {
-    flex-direction: column;
-  }
-
-  .confirmation-modal-actions button {
-    width: 100%;
-  }
+  .confirmation-modal { padding: 20px 16px; }
+  .confirmation-modal-actions { flex-direction: column; }
+  .confirmation-modal-actions button { width: 100%; }
+  .navbar { padding: 12px 3%; }
+  .nav-controls { gap: 6px; }
+  .btn-filled, .btn-text { padding: 6px 9px; font-size: 0.82rem; }
+  .logo { font-size: 0.82rem; }
+  .hero-section { padding: 35px 4%; }
+  .form-container { padding: 26px 20px; }
+  .form-container h1 { font-size: 1.7rem; }
+  .form-subtitle { margin-bottom: 24px; }
+  .hero-content h1 { font-size: 2.1rem; }
+  .hero-btns { flex-wrap: wrap; }
+  .section-title { font-size: 1.7rem; margin-bottom: 35px; }
 }

@@ -23,6 +23,14 @@ function Register() {
     confirmPassword: "",
   });
 
+  // Control whether each password field is visible
+  const [showPassword, setShowPassword] =
+    useState(false);
+  const [
+    showConfirmPassword,
+    setShowConfirmPassword,
+  ] = useState(false);
+
   // Store a separate client-side validation error for each field
   const [validationErrors, setValidationErrors] =
     useState({
@@ -222,9 +230,16 @@ function Register() {
     <>
       {/* Main navigation */}
       <nav className="navbar">
-        <div className="logo">
+        <Link
+          to="/"
+          className="logo"
+          style={{
+            color: "inherit",
+            textDecoration: "none",
+          }}
+        >
           TaxWise Israel 📈
-        </div>
+        </Link>
 
         <div className="nav-controls">
           <Link
@@ -305,13 +320,36 @@ function Register() {
               </p>
             )}
 
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-            />
+            <div className="password-input-wrapper">
+              <input
+                type={
+                  showPassword
+                    ? "text"
+                    : "password"
+                }
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() =>
+                  setShowPassword(
+                    !showPassword
+                  )
+                }
+                aria-label={
+                  showPassword
+                    ? "Hide password"
+                    : "Show password"
+                }
+              >
+                👁
+              </button>
+            </div>
 
             {/* Show the validation error for the password field */}
             {validationErrors.password && (
@@ -320,13 +358,36 @@ function Register() {
               </p>
             )}
 
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
+            <div className="password-input-wrapper">
+              <input
+                type={
+                  showConfirmPassword
+                    ? "text"
+                    : "password"
+                }
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() =>
+                  setShowConfirmPassword(
+                    !showConfirmPassword
+                  )
+                }
+                aria-label={
+                  showConfirmPassword
+                    ? "Hide password"
+                    : "Show password"
+                }
+              >
+                👁
+              </button>
+            </div>
 
             {/* Show the validation error for the confirmation field */}
             {validationErrors.confirmPassword && (
