@@ -4,22 +4,20 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
-
 import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 import { store } from "./store/store";
 
-
 import "./styles/style.css";
 
+// Google OAuth client ID from environment variables
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 // Render the React application
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {/* Provide Google authentication to the app */}
-    <GoogleOAuthProvider
-      clientId="626658383553-pq0m9u0tl27vhseurt1dgs0ds4ifeo6j.apps.googleusercontent.com"
-    >
+    <GoogleOAuthProvider clientId={googleClientId}>
       {/* Connect the application to the Redux store */}
       <Provider store={store}>
         {/* Enable client-side routing */}
