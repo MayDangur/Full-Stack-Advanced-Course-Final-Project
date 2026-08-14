@@ -170,6 +170,28 @@ The frontend uses:
 
 These features help reduce unnecessary loading and rendering.
 
+## API Endpoints
+
+| Method | Endpoint                            | Description                            | Authentication |
+| ------ | ----------------------------------- | -------------------------------------- | -------------- |
+| POST   | `/api/auth/register`                | Register a new user                    | No             |
+| POST   | `/api/auth/login`                   | Log in with email and password         | No             |
+| POST   | `/api/auth/google`                  | Sign in with Google                    | No             |
+| GET    | `/api/auth/me`                      | Get the currently authenticated user   | Yes            |
+| PUT    | `/api/auth/profile-image`           | Upload or update profile image         | Yes            |
+| DELETE | `/api/auth/profile-image`           | Remove profile image                   | Yes            |
+| POST   | `/api/tax-requests`                 | Create a tax request                   | Yes            |
+| GET    | `/api/tax-requests`                 | Get the current user's tax requests    | Yes            |
+| GET    | `/api/tax-requests/:id`             | Get a specific tax request             | Yes            |
+| PUT    | `/api/tax-requests/:id`             | Update a tax request                   | Yes            |
+| DELETE | `/api/tax-requests/:id`             | Delete a tax request                   | Yes            |
+| POST   | `/api/documents/upload`             | Upload a document                      | Yes            |
+| GET    | `/api/documents/:taxRequestId`      | Get documents for a tax request        | Yes            |
+| DELETE | `/api/documents/:id`                | Delete a document                      | Yes            |
+| GET    | `/api/admin/requests`               | Get all client tax requests            | Admin          |
+| GET    | `/api/admin/requests/:id/documents` | Get documents for a client tax request | Admin          |
+| PATCH  | `/api/admin/requests/:id/status`    | Update a tax request status            | Admin          |
+
 ## Local Setup
 
 ### 1. Clone the repository
@@ -207,6 +229,7 @@ Frontend configuration may include:
 
 ```env
 VITE_API_URL=
+VITE_GOOGLE_CLIENT_ID=
 ```
 
 Additional authentication and media-service environment variables should also be configured according to the project's local environment.
