@@ -29,6 +29,10 @@ function Login() {
   const [successMessage, setSuccessMessage] =
     useState("");
 
+  // Track whether a magic login email is being sent
+  const [sendingMagicLink, setSendingMagicLink] =
+    useState(false);
+
   // Update the matching field while the user types
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -38,8 +42,9 @@ function Login() {
       [e.target.name]: e.target.value,
     });
 
-    // Clear the validation message when the user changes the form
+    // Clear messages when the user changes the form
     setValidationError("");
+    setSuccessMessage("");
   };
 
   // Handle regular email and password login
@@ -119,6 +124,58 @@ function Login() {
             "Login failed"
         );
       }
+    }
+  };
+
+  // Send a passwordless login link to the entered email
+  const handleMagicLogin = async () => {
+    setValidationError("");
+    setSuccessMessage("");
+
+    const email = formData.email.trim();
+
+    // Make sure the user entered an email address
+    if (!email) {
+      setValidationError(
+        "Please enter your email address first."
+      );
+      return;
+    }
+
+    const emailPattern =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Make sure the entered email has a valid format
+    if (!emailPattern.test(email)) {
+      setValidationError(
+        "Please enter a valid email address."
+      );
+      return;
+    }
+
+    try {
+      setSendingMagicLink(true);
+
+      // Ask the backend to send a secure login link
+      const response = await api.post(
+        "/auth/magic-login",
+        {
+          email,
+        }
+      );
+
+      // Show the response without revealing whether an account exists
+      setSuccessMessage(
+        response.data.message ||
+          "If an account exists for this email, a sign-in link has been sent."
+      );
+    } catch (error: any) {
+      setValidationError(
+        error.response?.data?.message ??
+          "Failed to send login link"
+      );
+    } finally {
+      setSendingMagicLink(false);
     }
   };
 
@@ -282,7 +339,7 @@ function Login() {
               </p>
             )}
 
-            {/* Show successful login feedback before automatic navigation */}
+            {/* Show successful login or email-link feedback */}
             {successMessage && (
               <p
                 style={{
@@ -301,6 +358,21 @@ function Login() {
               className="btn-primary"
             >
               Login
+            </button>
+
+            {/* Passwordless login using a secure email link */}
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={handleMagicLogin}
+              disabled={sendingMagicLink}
+              style={{
+                marginTop: "10px",
+              }}
+            >
+              {sendingMagicLink
+                ? "Sending Login Link..."
+                : "Sign in with Email Link"}
             </button>
           </form>
 

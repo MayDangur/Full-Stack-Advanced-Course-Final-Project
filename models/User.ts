@@ -7,6 +7,7 @@ export interface IUser extends Document {
   password: string;
   role: "user" | "admin";
   profileImage?: string;
+  isEmailVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -48,6 +49,12 @@ const userSchema = new Schema(
     profileImage: {
       type: String,
       default: "",
+    },
+
+    // Indicates whether the user's email address has been verified
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
     },
   },
   {

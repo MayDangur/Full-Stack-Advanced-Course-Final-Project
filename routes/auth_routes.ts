@@ -1,24 +1,32 @@
 import express from "express";
 
+
 import authMiddleware from "../middleware/authMiddleware";
 import profileUpload from "../middleware/profileUpload";
 import validate from "../middleware/validate";
+
 
 import {
   registerSchema,
   loginSchema,
 } from "../validation/authValidation";
 
+
 import {
   register,
   login,
   googleSignin,
+  verifyEmail,
+  requestMagicLogin,
+  verifyMagicLogin,
   getMe,
   updateProfileImage,
   removeProfileImage,
 } from "../controllers/authController";
 
+
 const router = express.Router();
+
 
 // Register
 router.post(
@@ -27,6 +35,7 @@ router.post(
   register
 );
 
+
 // Login
 router.post(
   "/login",
@@ -34,8 +43,31 @@ router.post(
   login
 );
 
+
 // Google Login
 router.post("/google", googleSignin);
+
+
+// Verify email
+router.get(
+  "/verify-email",
+  verifyEmail
+);
+
+
+// Request magic login link
+router.post(
+  "/magic-login",
+  requestMagicLogin
+);
+
+
+// Verify magic login link
+router.get(
+  "/magic-login/verify",
+  verifyMagicLogin
+);
+
 
 // Get current user
 router.get(
@@ -43,6 +75,7 @@ router.get(
   authMiddleware,
   getMe
 );
+
 
 // Upload or update profile image
 router.put(
@@ -52,11 +85,13 @@ router.put(
   updateProfileImage
 );
 
+
 // Remove profile image
 router.delete(
   "/profile-image",
   authMiddleware,
   removeProfileImage
 );
+
 
 export default router;

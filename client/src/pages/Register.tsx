@@ -151,16 +151,11 @@ function Register() {
         }
       );
 
-      // Show the success message returned by the server
+      // Show the verification instructions returned by the server
       setSuccessMessage(
         response.data.message ||
-          "Registration successful!"
+          "Registration successful! Please check your email to verify your account."
       );
-
-      // Continue automatically to the login page
-      setTimeout(() => {
-        navigate("/login");
-      }, 700);
     } catch (error: any) {
       // Show an error returned by the server
       const serverMessage =
@@ -405,7 +400,7 @@ function Register() {
               </p>
             )}
 
-            {/* Show successful registration feedback before automatic navigation */}
+            {/* Show email verification instructions after registration */}
             {successMessage && (
               <p
                 style={{

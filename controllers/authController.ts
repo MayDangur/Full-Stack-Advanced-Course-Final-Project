@@ -11,6 +11,10 @@ import crypto from "crypto";
 import User from "../models/User";
 import { AuthRequest } from "../middleware/authMiddleware";
 import cloudinary from "../config/cloudinary";
+import {
+  sendVerificationEmail,
+  sendMagicLoginEmail,
+} from "../utils/emailService";
 
 // Google client used to verify Google ID tokens
 const googleClient = new OAuth2Client(
@@ -44,6 +48,38 @@ const createToken = (
     getJwtSecret(),
     {
       expiresIn: "7d",
+    }
+  );
+};
+
+// Create a short-lived token for email verification
+const createEmailVerificationToken = (
+  userId: string
+): string => {
+  return jwt.sign(
+    {
+      userId,
+      purpose: "email-verification",
+    },
+    getJwtSecret(),
+    {
+      expiresIn: "1h",
+    }
+  );
+};
+
+// Create a short-lived token for passwordless email login
+const createMagicLoginToken = (
+  userId: string
+): string => {
+  return jwt.sign(
+    {
+      userId,
+      purpose: "magic-login",
+    },
+    getJwtSecret(),
+    {
+      expiresIn: "15m",
     }
   );
 };
@@ -83,13 +119,35 @@ export const register = async (
       name,
       email: email.toLowerCase(),
       password: hashedPassword,
+      isEmailVerified: false,
     });
+
+    // Create the email verification token
+    const verificationToken =
+      createEmailVerificationToken(
+        newUser._id.toString()
+      );
+
+    const clientUrl = process.env.CLIENT_URL;
+
+    if (!clientUrl) {
+      throw new Error(
+        "CLIENT_URL is not defined in environment variables"
+      );
+    }
+
+    // Send the verification link to the registered email
+    await sendVerificationEmail(
+      newUser.email,
+      `${clientUrl}/verify-email?token=${verificationToken}`
+    );
 
     // Return the user without the password
     res.status(201).json({
       success: true,
-      message: "Registration successful!",
-        data: {
+      message:
+        "Registration successful! Please check your email to verify your account.",
+      data: {
         id: newUser._id,
         name: newUser.name,
         email: newUser.email,
@@ -97,6 +155,104 @@ export const register = async (
       },
     });
   } catch (error) {
+    next(error);
+  }
+};
+
+// Verify Email
+export const verifyEmail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { token } = req.query;
+
+    if (
+      !token ||
+      typeof token !== "string"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Invalid email verification link",
+      });
+    }
+
+    const decoded = jwt.verify(
+      token,
+      getJwtSecret()
+    ) as {
+      userId: string;
+      purpose?: string;
+    };
+
+    if (
+      decoded.purpose !==
+      "email-verification"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Invalid email verification token",
+      });
+    }
+
+    const user = await User.findById(
+      decoded.userId
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    user.isEmailVerified = true;
+    await user.save();
+
+    // Create a login token after successful email verification
+    const loginToken = createToken(
+      user._id.toString(),
+      user.role
+    );
+
+    // Return the token and user for automatic login
+    res.status(200).json({
+      success: true,
+      message:
+        "Email verified successfully",
+      token: loginToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        profileImage: user.profileImage,
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof jwt.TokenExpiredError
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Email verification link has expired",
+      });
+    }
+
+    if (
+      error instanceof jwt.JsonWebTokenError
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Invalid email verification link",
+      });
+    }
+
     next(error);
   }
 };
@@ -133,6 +289,15 @@ export const login = async (
       return res.status(401).json({
         success: false,
         message: "Invalid credentials",
+      });
+    }
+
+    // Require email verification for newly registered users
+    if (user.isEmailVerified === false) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Please verify your email before logging in",
       });
     }
 
@@ -231,7 +396,14 @@ export const googleSignin = async (
           "Google User",
         email,
         password: hashedPassword,
+        isEmailVerified: true,
       });
+    } else if (
+      user.isEmailVerified === false
+    ) {
+      // Google has already verified ownership of this email
+      user.isEmailVerified = true;
+      await user.save();
     }
 
     // Google users receive the same JWT as regular users
@@ -253,6 +425,155 @@ export const googleSignin = async (
       },
     });
   } catch (error) {
+    next(error);
+  }
+};
+
+// Request Magic Login Link
+export const requestMagicLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email } = req.body;
+
+    if (
+      !email ||
+      typeof email !== "string"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "A valid email is required",
+      });
+    }
+
+    // Find an existing account using the supplied email
+    const user = await User.findOne({
+      email: email.trim().toLowerCase(),
+    });
+
+    // Use the same response whether or not the account exists
+    if (!user) {
+      return res.status(200).json({
+        success: true,
+        message:
+          "If an account exists for this email, a sign-in link has been sent.",
+      });
+    }
+
+    const clientUrl = process.env.CLIENT_URL;
+
+    if (!clientUrl) {
+      throw new Error(
+        "CLIENT_URL is not defined in environment variables"
+      );
+    }
+
+    // Create a temporary token that can only be used for magic login
+    const magicToken = createMagicLoginToken(
+      user._id.toString()
+    );
+
+    // Send the secure login link to the existing user's email
+    await sendMagicLoginEmail(
+      user.email,
+      `${clientUrl}/magic-login?token=${magicToken}`
+    );
+
+    res.status(200).json({
+      success: true,
+      message:
+        "If an account exists for this email, a sign-in link has been sent.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Verify Magic Login Link
+export const verifyMagicLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { token } = req.query;
+
+    if (
+      !token ||
+      typeof token !== "string"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid login link",
+      });
+    }
+
+    const decoded = jwt.verify(
+      token,
+      getJwtSecret()
+    ) as {
+      userId: string;
+      purpose?: string;
+    };
+
+    // Make sure an email verification token cannot be used for login
+    if (decoded.purpose !== "magic-login") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid login token",
+      });
+    }
+
+    const user = await User.findById(
+      decoded.userId
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Create the normal application JWT after the email link is verified
+    const loginToken = createToken(
+      user._id.toString(),
+      user.role
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token: loginToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        profileImage: user.profileImage,
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof jwt.TokenExpiredError
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Login link has expired",
+      });
+    }
+
+    if (
+      error instanceof jwt.JsonWebTokenError
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid login link",
+      });
+    }
+
     next(error);
   }
 };

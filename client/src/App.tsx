@@ -24,6 +24,14 @@ const Register = lazy(
   () => import("./pages/Register")
 );
 
+const VerifyEmail = lazy(
+  () => import("./pages/VerifyEmail")
+);
+
+const MagicLogin = lazy(
+  () => import("./pages/MagicLogin")
+);
+
 const PersonalArea = lazy(
   () => import("./pages/PersonalArea")
 );
@@ -63,6 +71,16 @@ function App() {
         <Route
           path="/register"
           element={<Register />}
+        />
+
+        <Route
+          path="/verify-email"
+          element={<VerifyEmail />}
+        />
+
+        <Route
+          path="/magic-login"
+          element={<MagicLogin />}
         />
 
         <Route
