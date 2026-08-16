@@ -90,15 +90,118 @@ export const sendVerificationEmail = async (
     email,
     "Verify your TaxWise Israel account",
     `
-      <div dir="ltr" style="text-align: left;">
-        <h2>Welcome to TaxWise Israel</h2>
-        <p>Please verify your email address to activate your account.</p>
-        <p>
-          <a href="${verificationUrl}">
+      <div
+        dir="ltr"
+        style="
+          margin: 0;
+          padding: 40px 20px;
+          background-color: #f8fafc;
+          font-family: Arial, Helvetica, sans-serif;
+          color: #1e293b;
+        "
+      >
+        <div
+          style="
+            max-width: 560px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+          "
+        >
+          <div
+            style="
+              font-size: 24px;
+              font-weight: 700;
+              color: #0f172a;
+              margin-bottom: 32px;
+            "
+          >
+            TaxWise Israel
+          </div>
+
+          <h2
+            style="
+              margin: 0 0 16px;
+              font-size: 26px;
+              color: #0f172a;
+            "
+          >
+            Welcome to TaxWise Israel
+          </h2>
+
+          <p
+            style="
+              margin: 0 0 28px;
+              font-size: 16px;
+              line-height: 1.6;
+              color: #64748b;
+            "
+          >
+            Please verify your email address to activate your account
+            and access your personal area.
+          </p>
+
+          <a
+            href="${verificationUrl}"
+            style="
+              display: inline-block;
+              background-color: #00bfa5;
+              color: #ffffff;
+              text-decoration: none;
+              font-size: 16px;
+              font-weight: 700;
+              padding: 14px 28px;
+              border-radius: 8px;
+            "
+          >
             Verify Email
           </a>
+
+          <p
+            style="
+              margin: 28px 0 0;
+              font-size: 14px;
+              line-height: 1.6;
+              color: #64748b;
+            "
+          >
+            This verification link is valid for 1 hour.
+          </p>
+
+          <div
+            style="
+              border-top: 1px solid #e2e8f0;
+              margin-top: 32px;
+              padding-top: 24px;
+            "
+          >
+            <p
+              style="
+                margin: 0;
+                font-size: 13px;
+                line-height: 1.6;
+                color: #94a3b8;
+              "
+            >
+              If you did not create a TaxWise Israel account,
+              you can safely ignore this email.
+            </p>
+          </div>
+        </div>
+
+        <p
+          style="
+            text-align: center;
+            margin: 20px 0 0;
+            font-size: 12px;
+            color: #94a3b8;
+          "
+        >
+          TaxWise Israel
         </p>
-        <p>If you did not create this account, you can ignore this email.</p>
       </div>
     `
   );
@@ -113,15 +216,118 @@ export const sendMagicLoginEmail = async (
     email,
     "Sign in to your TaxWise Israel account",
     `
-      <div dir="ltr" style="text-align: left;">
-        <h2>Sign in to TaxWise Israel</h2>
-        <p>Click the link below to securely sign in to your account.</p>
-        <p>
-          <a href="${loginUrl}">
-            Sign In To TaxWise Israel
+      <div
+        dir="ltr"
+        style="
+          margin: 0;
+          padding: 40px 20px;
+          background-color: #f8fafc;
+          font-family: Arial, Helvetica, sans-serif;
+          color: #1e293b;
+        "
+      >
+        <div
+          style="
+            max-width: 560px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+          "
+        >
+          <div
+            style="
+              font-size: 24px;
+              font-weight: 700;
+              color: #0f172a;
+              margin-bottom: 32px;
+            "
+          >
+            TaxWise Israel
+          </div>
+
+          <h2
+            style="
+              margin: 0 0 16px;
+              font-size: 26px;
+              color: #0f172a;
+            "
+          >
+            Sign in to your account
+          </h2>
+
+          <p
+            style="
+              margin: 0 0 28px;
+              font-size: 16px;
+              line-height: 1.6;
+              color: #64748b;
+            "
+          >
+            We received a request to securely sign in to your
+            TaxWise Israel account.
+          </p>
+
+          <a
+            href="${loginUrl}"
+            style="
+              display: inline-block;
+              background-color: #00bfa5;
+              color: #ffffff;
+              text-decoration: none;
+              font-size: 16px;
+              font-weight: 700;
+              padding: 14px 28px;
+              border-radius: 8px;
+            "
+          >
+            Sign in to TaxWise Israel
           </a>
+
+          <p
+            style="
+              margin: 28px 0 0;
+              font-size: 14px;
+              line-height: 1.6;
+              color: #64748b;
+            "
+          >
+            This secure sign-in link is valid for 15 minutes.
+          </p>
+
+          <div
+            style="
+              border-top: 1px solid #e2e8f0;
+              margin-top: 32px;
+              padding-top: 24px;
+            "
+          >
+            <p
+              style="
+                margin: 0;
+                font-size: 13px;
+                line-height: 1.6;
+                color: #94a3b8;
+              "
+            >
+              If you did not request this login link,
+              you can safely ignore this email.
+            </p>
+          </div>
+        </div>
+
+        <p
+          style="
+            text-align: center;
+            margin: 20px 0 0;
+            font-size: 12px;
+            color: #94a3b8;
+          "
+        >
+          TaxWise Israel
         </p>
-        <p>If you did not request this login link, you can ignore this email.</p>
       </div>
     `
   );
