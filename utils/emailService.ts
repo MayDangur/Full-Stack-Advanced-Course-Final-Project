@@ -55,6 +55,7 @@ const sendEmail = async (
             ],
             Subject: subject,
             HTMLPart: html,
+            TrackClicks: "disabled",
           },
         ],
       }),
