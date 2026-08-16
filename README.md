@@ -7,7 +7,7 @@ The project was developed as the final project for the Full Stack Advanced Cours
 ## Live Application
 
 **Frontend:**
-https://full-stack-advanced-course-final-pr.vercel.app
+https://taxwise-israel.vercel.app
 
 **Backend:**
 https://taxwise-backend.onrender.com
@@ -198,7 +198,7 @@ These features help reduce unnecessary loading and rendering.
 
 ```bash
 git clone <repository-url>
-cd Full-Stack-Advanced-Course-Final-Project
+cd TaxWise-Israel
 ```
 
 ### 2. Install backend dependencies

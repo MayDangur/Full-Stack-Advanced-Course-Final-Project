@@ -1,5 +1,5 @@
 {
-  "name": "full-stack-advanced-course-final-project",
+  "name": "taxwise-israel",
   "version": "1.0.0",
   "description": "מעודכן",
   "main": "server.js",
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MayDangur/Full-Stack-Advanced-Course-Final-Project.git"
+    "url": "git+https://github.com/MayDangur/TaxWise-Israel.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/MayDangur/Full-Stack-Advanced-Course-Final-Project/issues"
+    "url": "https://github.com/MayDangur/TaxWise-Israel/issues"
   },
-  "homepage": "https://github.com/MayDangur/Full-Stack-Advanced-Course-Final-Project#readme",
+  "homepage": "https://github.com/MayDangur/TaxWise-Israel#readme",
   "dependencies": {
     "@reduxjs/toolkit": "^2.12.0",
     "axios": "^1.18.1",
