@@ -90,13 +90,17 @@ export const sendVerificationEmail = async (
     email,
     "Verify your TaxWise Israel account",
     `
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap');
+      </style>
+
       <div
         dir="ltr"
         style="
           margin: 0;
           padding: 40px 20px;
           background-color: #f8fafc;
-          font-family: Arial, Helvetica, sans-serif;
+          font-family: 'Assistant', Arial, Helvetica, sans-serif;
           color: #1e293b;
         "
       >
@@ -216,13 +220,17 @@ export const sendMagicLoginEmail = async (
     email,
     "Sign in to your TaxWise Israel account",
     `
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap');
+      </style>
+
       <div
         dir="ltr"
         style="
           margin: 0;
           padding: 40px 20px;
           background-color: #f8fafc;
-          font-family: Arial, Helvetica, sans-serif;
+          font-family: 'Assistant', Arial, Helvetica, sans-serif;
           color: #1e293b;
         "
       >
