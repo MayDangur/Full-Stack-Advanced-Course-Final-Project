@@ -1,11 +1,12 @@
 {
   "name": "taxwise-israel",
   "version": "1.0.0",
-  "description": "מעודכן",
-  "main": "server.js",
+  "description": "Full-stack tax refund request management application",
+  "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "build": "tsc",
+    "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only server.ts"
   },
   "repository": {
