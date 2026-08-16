@@ -339,44 +339,39 @@ function Admin() {
         </section>
 
         {/* Filter client requests by their current status */}
-        <div
-          style={{
-            marginBottom: "20px",
-          }}
-        >
+        <div className="admin-filter">
           <label
             htmlFor="request-status-filter"
-            style={{
-              display: "block",
-              marginBottom: "8px",
-              fontWeight: "600",
-            }}
+            className="admin-filter-label"
           >
             Filter by status
           </label>
 
-          <select
-            id="request-status-filter"
-            value={statusFilter}
-            onChange={(event) =>
-              setStatusFilter(
-                event.target.value as StatusFilter
-              )
-            }
-          >
-            <option value="all">
-              All Requests
-            </option>
-            <option value="pending">
-              Pending
-            </option>
-            <option value="approved">
-              Approved
-            </option>
-            <option value="rejected">
-              Rejected
-            </option>
-          </select>
+          <div className="admin-filter-select-wrapper">
+            <select
+              id="request-status-filter"
+              className="admin-filter-select"
+              value={statusFilter}
+              onChange={(event) =>
+                setStatusFilter(
+                  event.target.value as StatusFilter
+                )
+              }
+            >
+              <option value="all">
+                All Requests
+              </option>
+              <option value="pending">
+                Pending
+              </option>
+              <option value="approved">
+                Approved
+              </option>
+              <option value="rejected">
+                Rejected
+              </option>
+            </select>
+          </div>
         </div>
 
         {/* Display API errors without hiding the existing requests */}
