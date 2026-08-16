@@ -101,8 +101,8 @@ export const register = async (
     if (userExists) {
       return res.status(400).json({
         success: false,
-        message: "אימייל זה כבר קיים במערכת",
-      });
+        message: "This email is already registered.",
+     });
     }
 
     // Generate salt for password hashing

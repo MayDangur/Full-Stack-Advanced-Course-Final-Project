@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-import path from "path";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 
@@ -55,14 +54,6 @@ const authLimiter = rateLimit({
     message: "Too many login attempts, please try again later.",
   },
 });
-
-// Static files (uploaded documents)
-app.use(
-  "/uploads",
-  express.static(
-    path.join(__dirname, "uploads")
-  )
-);
 
 // Routes
 

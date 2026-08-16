@@ -162,11 +162,7 @@ function Register() {
         error.response?.data?.message;
 
       setServerError(
-        serverMessage ===
-          "אימייל זה כבר קיים במערכת"
-          ? "This email is already registered."
-          : serverMessage ||
-              "Registration failed"
+        serverMessage || "Registration failed"
       );
     }
   };
