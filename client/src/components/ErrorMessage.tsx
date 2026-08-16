@@ -2,6 +2,7 @@ interface ErrorMessageProps {
   message: string;
 }
 
+// Display a reusable error message to the user
 function ErrorMessage({
   message,
 }: ErrorMessageProps) {
@@ -17,6 +18,7 @@ function ErrorMessage({
         fontWeight: "bold",
       }}
     >
+      {/* Display the provided error message */}
       ⚠ {message}
     </div>
   );

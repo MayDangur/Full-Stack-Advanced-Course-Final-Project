@@ -1,3 +1,4 @@
+// Display a reusable loading state while content is being fetched
 function LoadingSpinner() {
   return (
     <div
