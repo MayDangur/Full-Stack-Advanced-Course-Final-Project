@@ -34,6 +34,12 @@ interface TaxRequest {
   createdAt: string;
 }
 
+type StatusFilter =
+  | "all"
+  | "pending"
+  | "approved"
+  | "rejected";
+
 function Admin() {
   // Use the shared authentication state and logout action from AuthContext
   const { user, logout } = useAuth();
@@ -42,6 +48,10 @@ function Admin() {
   const [requests, setRequests] = useState<
     TaxRequest[]
   >([]);
+
+  // Store the selected request status filter
+  const [statusFilter, setStatusFilter] =
+    useState<StatusFilter>("all");
 
   // Store documents for each tax request
   const [documentsByRequest, setDocumentsByRequest] =
@@ -89,15 +99,18 @@ function Admin() {
     []
   );
 
-  // Load tax requests from all clients
+  // Load tax requests from all clients with an optional status filter
   const fetchRequests = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
 
-      const response = await api.get(
-        "/admin/requests"
-      );
+      const endpoint =
+        statusFilter === "all"
+          ? "/admin/requests"
+          : `/admin/requests?status=${statusFilter}`;
+
+      const response = await api.get(endpoint);
 
       // Show the oldest submitted request first
       const sortedRequests = [
@@ -133,9 +146,9 @@ function Admin() {
     } finally {
       setLoading(false);
     }
-  }, [fetchRequestDocuments]);
+  }, [fetchRequestDocuments, statusFilter]);
 
-  // Load all client requests when the admin page opens
+  // Load client requests when the page opens or the status filter changes
   useEffect(() => {
     fetchRequests();
   }, [fetchRequests]);
@@ -208,14 +221,27 @@ function Admin() {
         }
       );
 
-      // Replace only the request that was updated by the server
-      setRequests((currentRequests) =>
-        currentRequests.map((request) =>
-          request._id === requestId
-            ? response.data.data
-            : request
-        )
-      );
+      // Remove the updated request if it no longer matches the active filter
+      if (
+        statusFilter !== "all" &&
+        status !== statusFilter
+      ) {
+        setRequests((currentRequests) =>
+          currentRequests.filter(
+            (request) =>
+              request._id !== requestId
+          )
+        );
+      } else {
+        // Replace only the request that was updated by the server
+        setRequests((currentRequests) =>
+          currentRequests.map((request) =>
+            request._id === requestId
+              ? response.data.data
+              : request
+          )
+        );
+      }
     } catch (error) {
       setError(
         "Unable to update request status."
@@ -312,6 +338,47 @@ function Admin() {
           </p>
         </section>
 
+        {/* Filter client requests by their current status */}
+        <div
+          style={{
+            marginBottom: "20px",
+          }}
+        >
+          <label
+            htmlFor="request-status-filter"
+            style={{
+              display: "block",
+              marginBottom: "8px",
+              fontWeight: "600",
+            }}
+          >
+            Filter by status
+          </label>
+
+          <select
+            id="request-status-filter"
+            value={statusFilter}
+            onChange={(event) =>
+              setStatusFilter(
+                event.target.value as StatusFilter
+              )
+            }
+          >
+            <option value="all">
+              All Requests
+            </option>
+            <option value="pending">
+              Pending
+            </option>
+            <option value="approved">
+              Approved
+            </option>
+            <option value="rejected">
+              Rejected
+            </option>
+          </select>
+        </div>
+
         {/* Display API errors without hiding the existing requests */}
         {error && (
           <div
@@ -322,13 +389,13 @@ function Admin() {
           </div>
         )}
 
-        {/* Show an empty state when no client requests exist */}
+        {/* Show an empty state when no matching client requests exist */}
         {requests.length === 0 ? (
           <div className="admin-empty">
-            <h2>No client requests yet</h2>
+            <h2>No client requests found</h2>
             <p>
-              New tax requests will appear here
-              when clients submit them.
+              No client requests match the
+              selected status.
             </p>
           </div>
         ) : (

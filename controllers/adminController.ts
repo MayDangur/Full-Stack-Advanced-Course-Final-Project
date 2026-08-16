@@ -2,6 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import TaxRequest from "../models/TaxRequest";
 import DocumentModel from "../models/Document";
 
+// Supported tax request statuses used for admin filtering
+type TaxRequestStatus =
+  | "pending"
+  | "approved"
+  | "rejected";
+
 // Get all tax requests for the admin
 export const getAllAdminTaxRequests = async (
   req: Request,
@@ -9,8 +15,21 @@ export const getAllAdminTaxRequests = async (
   next: NextFunction
 ) => {
   try {
+    const { status } = req.query;
+
+    // Apply an optional status filter while keeping all requests as the default
+    const filter: { status?: TaxRequestStatus } = {};
+
+    if (
+      status === "pending" ||
+      status === "approved" ||
+      status === "rejected"
+    ) {
+      filter.status = status;
+    }
+
     // Get requests from all users and include basic client information
-    const requests = await TaxRequest.find()
+    const requests = await TaxRequest.find(filter)
       .populate("user", "name email")
       .sort({ createdAt: -1 });
 
