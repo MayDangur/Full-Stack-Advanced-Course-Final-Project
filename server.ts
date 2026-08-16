@@ -18,6 +18,9 @@ dotenv.config();
 // Create the Express application
 const app = express();
 
+// Trust the Render proxy
+app.set("trust proxy", 1);
+
 // Allow requests from the frontend
 app.use(cors());
 
