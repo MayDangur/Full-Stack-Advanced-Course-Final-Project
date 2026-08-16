@@ -16,6 +16,8 @@ https://taxwise-backend.onrender.com
 
 * User registration and login
 * Google authentication
+* Email verification
+* Passwordless magic-link login
 * JWT-based authentication
 * Role-based authorization for users and administrators
 * Protected client and server routes
@@ -44,6 +46,7 @@ https://taxwise-backend.onrender.com
 * Axios
 * Context API
 * Redux Toolkit
+* Google OAuth
 
 ### Backend
 
@@ -58,6 +61,7 @@ https://taxwise-backend.onrender.com
 * Multer
 * Helmet
 * Express Rate Limit
+* Google APIs
 
 ### Media & Deployment
 
@@ -177,6 +181,9 @@ These features help reduce unnecessary loading and rendering.
 | POST   | `/api/auth/register`                | Register a new user                    | No             |
 | POST   | `/api/auth/login`                   | Log in with email and password         | No             |
 | POST   | `/api/auth/google`                  | Sign in with Google                    | No             |
+| GET    | `/api/auth/verify-email`            | Verify a user's email address          | No             |
+| POST   | `/api/auth/magic-login`             | Request a magic login link             | No             |
+| GET    | `/api/auth/magic-login/verify`      | Verify a magic login link and sign in  | No             |
 | GET    | `/api/auth/me`                      | Get the currently authenticated user   | Yes            |
 | PUT    | `/api/auth/profile-image`           | Upload or update profile image         | Yes            |
 | DELETE | `/api/auth/profile-image`           | Remove profile image                   | Yes            |
@@ -218,6 +225,8 @@ npm install
 
 Create the required `.env` files and configure the environment variables used by the project.
 
+Use the provided `.env.example` files as templates for the required environment variables.
+
 Examples of required backend configuration include:
 
 ```env
@@ -238,7 +247,11 @@ Additional authentication and media-service environment variables should also be
 
 ### 5. Run the Application
 
-Run the backend from the project root using the project's development script.
+Run the backend from the project root:
+
+```bash
+npm run dev
+```
 
 Run the frontend from the `client` directory:
 
