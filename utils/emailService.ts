@@ -1,4 +1,8 @@
 import nodemailer from "nodemailer";
+import dns from "dns";
+
+// Prefer IPv4 when resolving SMTP hosts
+dns.setDefaultResultOrder("ipv4first");
 
 // Get the email configuration from environment variables
 const getEmailTransporter = () => {
@@ -13,7 +17,9 @@ const getEmailTransporter = () => {
   }
 
   return nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
       user: emailUser,
       pass: emailAppPassword,
