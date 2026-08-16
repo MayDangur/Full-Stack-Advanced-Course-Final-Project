@@ -1,59 +1,83 @@
-// Get the Brevo configuration from environment variables
-const getBrevoConfig = () => {
-  const apiKey = process.env.BREVO_API_KEY;
-  const emailUser = process.env.EMAIL_USER;
+import { google } from "googleapis";
 
-  if (!apiKey || !emailUser) {
+// Get the Gmail API configuration from environment variables
+const getGmailConfig = () => {
+  const clientId = process.env.GMAIL_CLIENT_ID;
+  const clientSecret = process.env.GMAIL_CLIENT_SECRET;
+  const refreshToken = process.env.GMAIL_REFRESH_TOKEN;
+
+  if (!clientId || !clientSecret || !refreshToken) {
     throw new Error(
-      "Brevo email configuration is not defined in environment variables"
+      "Gmail API configuration is not defined in environment variables"
     );
   }
 
   return {
-    apiKey,
-    emailUser,
+    clientId,
+    clientSecret,
+    refreshToken,
   };
 };
 
-// Send an email through the Brevo HTTPS API
+// Convert an email message to the base64url format required by Gmail API
+const encodeMessage = (message: string) => {
+  return Buffer.from(message)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+};
+
+// Send an email through the Gmail HTTPS API
 const sendEmail = async (
   email: string,
   subject: string,
   html: string
 ) => {
-  const { apiKey, emailUser } = getBrevoConfig();
+  const {
+    clientId,
+    clientSecret,
+    refreshToken,
+  } = getGmailConfig();
 
-  const response = await fetch(
-    "https://api.brevo.com/v3/smtp/email",
-    {
-      method: "POST",
-      headers: {
-        "api-key": apiKey,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        sender: {
-          name: "TaxWise Israel",
-          email: emailUser,
-        },
-        to: [
-          {
-            email,
-          },
-        ],
-        subject,
-        htmlContent: html,
-      }),
-    }
+  const oauth2Client = new google.auth.OAuth2(
+    clientId,
+    clientSecret
   );
 
-  if (!response.ok) {
-    const errorText = await response.text();
+  oauth2Client.setCredentials({
+    refresh_token: refreshToken,
+  });
 
-    throw new Error(
-      `Brevo email sending failed: ${response.status} ${errorText}`
-    );
+  const gmail = google.gmail({
+    version: "v1",
+    auth: oauth2Client,
+  });
+
+  const encodedSubject = `=?UTF-8?B?${Buffer.from(subject).toString(
+    "base64"
+  )}?=`;
+
+  const message = [
+    `From: TaxWise Israel <taxwiseisrael@gmail.com>`,
+    `To: ${email}`,
+    `Subject: ${encodedSubject}`,
+    "MIME-Version: 1.0",
+    'Content-Type: text/html; charset="UTF-8"',
+    "",
+    html,
+  ].join("\r\n");
+
+  try {
+    await gmail.users.messages.send({
+      userId: "me",
+      requestBody: {
+        raw: encodeMessage(message),
+      },
+    });
+  } catch (error) {
+    console.error("Gmail API email sending failed:", error);
+    throw new Error("Email sending failed");
   }
 };
 
