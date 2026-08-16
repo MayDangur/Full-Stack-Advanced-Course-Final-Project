@@ -1,63 +1,49 @@
-// Get the Mailjet configuration from environment variables
-const getMailjetConfig = () => {
-  const apiKey = process.env.MAILJET_API_KEY;
-  const secretKey = process.env.MAILJET_SECRET_KEY;
+// Get the Brevo configuration from environment variables
+const getBrevoConfig = () => {
+  const apiKey = process.env.BREVO_API_KEY;
   const emailUser = process.env.EMAIL_USER;
 
-  if (!apiKey || !secretKey || !emailUser) {
+  if (!apiKey || !emailUser) {
     throw new Error(
-      "Mailjet email configuration is not defined in environment variables"
+      "Brevo email configuration is not defined in environment variables"
     );
   }
 
   return {
     apiKey,
-    secretKey,
     emailUser,
   };
 };
 
-// Send an email through the Mailjet HTTPS API
+// Send an email through the Brevo HTTPS API
 const sendEmail = async (
   email: string,
   subject: string,
   html: string
 ) => {
-  const {
-    apiKey,
-    secretKey,
-    emailUser,
-  } = getMailjetConfig();
-
-  const credentials = Buffer.from(
-    `${apiKey}:${secretKey}`
-  ).toString("base64");
+  const { apiKey, emailUser } = getBrevoConfig();
 
   const response = await fetch(
-    "https://api.mailjet.com/v3.1/send",
+    "https://api.brevo.com/v3/smtp/email",
     {
       method: "POST",
       headers: {
-        Authorization: `Basic ${credentials}`,
+        "api-key": apiKey,
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
       body: JSON.stringify({
-        Messages: [
+        sender: {
+          name: "TaxWise Israel",
+          email: emailUser,
+        },
+        to: [
           {
-            From: {
-              Email: emailUser,
-              Name: "TaxWise Israel",
-            },
-            To: [
-              {
-                Email: email,
-              },
-            ],
-            Subject: subject,
-            HTMLPart: html,
-            TrackClicks: "disabled",
+            email,
           },
         ],
+        subject,
+        htmlContent: html,
       }),
     }
   );
@@ -66,7 +52,7 @@ const sendEmail = async (
     const errorText = await response.text();
 
     throw new Error(
-      `Mailjet email sending failed: ${response.status} ${errorText}`
+      `Brevo email sending failed: ${response.status} ${errorText}`
     );
   }
 };
