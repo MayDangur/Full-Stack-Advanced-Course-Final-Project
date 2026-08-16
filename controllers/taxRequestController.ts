@@ -1,6 +1,5 @@
 import {
   Response,
-  Request,
   NextFunction,
 } from "express";
 import { AuthRequest } from "../middleware/authMiddleware";

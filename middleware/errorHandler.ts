@@ -1,15 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 
 
+
 // Global middleware for handling server errors
 const errorHandler = (
   err: Error,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   // Log the error for debugging
   console.error(err);
+
 
 
   // Send a consistent error response to the client
@@ -18,6 +20,7 @@ const errorHandler = (
     message: err.message || "Internal Server Error",
   });
 };
+
 
 
 export default errorHandler;

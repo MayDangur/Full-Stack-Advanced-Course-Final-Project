@@ -1,7 +1,9 @@
 import multer from "multer";
 
+
 // Keep profile images in memory before uploading them to Cloudinary
 const storage = multer.memoryStorage();
+
 
 const profileUpload = multer({
   storage,
@@ -9,7 +11,7 @@ const profileUpload = multer({
     fileSize: 5 * 1024 * 1024,
   },
   fileFilter: (
-    req,
+    _req,
     file,
     cb
   ) => {
@@ -27,5 +29,6 @@ const profileUpload = multer({
     }
   },
 });
+
 
 export default profileUpload;
