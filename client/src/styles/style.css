@@ -758,10 +758,31 @@ display: inline-block; }
   .confirmation-modal { padding: 20px 16px; }
   .confirmation-modal-actions { flex-direction: column; }
   .confirmation-modal-actions button { width: 100%; }
-  .navbar { padding: 12px 3%; }
-  .nav-controls { gap: 6px; }
-  .btn-filled, .btn-text { padding: 6px 9px; font-size: 0.82rem; }
-  .logo { font-size: 0.82rem; }
+
+  /* Keep the mobile navbar aligned to the sides */
+  .navbar {
+    padding: 12px 3%;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .nav-controls {
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .btn-filled,
+  .btn-text {
+    padding: 6px 8px;
+    font-size: 0.78rem;
+  }
+
+  .logo {
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
   .hero-section { padding: 35px 4%; }
   .form-container { padding: 26px 20px; }
   .form-container h1 { font-size: 1.7rem; }
