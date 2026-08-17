@@ -81,6 +81,22 @@ The backend follows a structured architecture using routes, middleware, controll
 
 Business logic is separated into controllers, while route files are responsible for defining API endpoints and applying the appropriate middleware.
 
+## Database Structure
+
+The application uses three main MongoDB collections:
+
+* `users` - stores registered users, authentication data, roles, and profile information.
+* `taxrequests` - stores tax refund requests and references the user who created each request.
+* `documents` - stores document metadata and references the tax request to which each document belongs.
+
+The main relationship structure is:
+
+```text
+User → Tax Requests → Documents
+```
+
+Mongoose references are used to connect the collections.
+
 ## Authentication
 
 Authentication is implemented using JWT.
@@ -240,21 +256,28 @@ Create the required `.env` files and configure the environment variables used by
 
 Use the provided `.env.example` files as templates for the required environment variables.
 
-Examples of required backend configuration include:
+Required backend environment variables:
 
 ```env
+PORT=
 MONGO_URI=
 JWT_SECRET=
+GOOGLE_CLIENT_ID=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+GMAIL_CLIENT_ID=
+GMAIL_CLIENT_SECRET=
+GMAIL_REFRESH_TOKEN=
+CLIENT_URL=
 ```
 
-Frontend configuration may include:
+Required frontend environment variables:
 
 ```env
 VITE_API_URL=
 VITE_GOOGLE_CLIENT_ID=
 ```
-
-Additional authentication and media-service environment variables should also be configured according to the project's local environment.
 
 **Do not commit real secrets or credentials to GitHub.**
 
