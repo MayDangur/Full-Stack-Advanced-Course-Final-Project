@@ -9,6 +9,8 @@ import { OAuth2Client } from "google-auth-library";
 import crypto from "crypto";
 
 import User from "../models/User";
+import TaxRequest from "../models/TaxRequest";
+import DocumentModel from "../models/Document";
 import { AuthRequest } from "../middleware/authMiddleware";
 import cloudinary from "../config/cloudinary";
 import {
@@ -770,6 +772,114 @@ export const removeProfileImage = async (
       message:
         "Profile image removed successfully",
       user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Delete Account
+export const deleteAccount = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Find the current authenticated user before deleting related data
+    const user = await User.findById(
+      req.user?.userId
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Find every tax request owned by the current user
+    const taxRequests = await TaxRequest.find({
+      user: user._id,
+    });
+
+    const taxRequestIds = taxRequests.map(
+      (taxRequest) => taxRequest._id
+    );
+
+    // Find all documents connected to the user's tax requests
+    const documents =
+      taxRequestIds.length > 0
+        ? await DocumentModel.find({
+            taxRequest: {
+              $in: taxRequestIds,
+            },
+          })
+        : [];
+
+    // Delete every stored document from Cloudinary
+    for (const document of documents) {
+      if (document.publicId) {
+        await cloudinary.uploader.destroy(
+          document.publicId,
+          {
+            resource_type:
+              document.resourceType || "raw",
+          }
+        );
+      }
+    }
+
+    // Remove the user's profile image from Cloudinary
+    if (user.profileImage) {
+      const urlParts =
+        user.profileImage.split("/upload/");
+
+      if (urlParts.length === 2) {
+        const pathWithVersion =
+          urlParts[1];
+
+        const pathWithoutVersion =
+          pathWithVersion.replace(
+            /^v\d+\//,
+            ""
+          );
+
+        const publicId =
+          pathWithoutVersion.replace(
+            /\.[^/.]+$/,
+            ""
+          );
+
+        await cloudinary.uploader.destroy(
+          publicId,
+          {
+            resource_type: "image",
+          }
+        );
+      }
+    }
+
+    // Remove all document records connected to the user's requests
+    if (taxRequestIds.length > 0) {
+      await DocumentModel.deleteMany({
+        taxRequest: {
+          $in: taxRequestIds,
+        },
+      });
+    }
+
+    // Remove all tax requests owned by the user
+    await TaxRequest.deleteMany({
+      user: user._id,
+    });
+
+    // Delete the user only after all related data has been removed
+    await user.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message:
+        "Account and related data deleted successfully",
     });
   } catch (error) {
     next(error);

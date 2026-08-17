@@ -66,6 +66,16 @@ function PersonalArea() {
   const [updatingProfileName, setUpdatingProfileName] =
     useState(false);
 
+  // Controls the account deletion confirmation modal
+  const [
+    showDeleteAccountConfirmation,
+    setShowDeleteAccountConfirmation,
+  ] = useState(false);
+
+  // Used while the account is being permanently deleted
+  const [deletingAccount, setDeletingAccount] =
+    useState(false);
+
   // Stores the selected profile image before uploading
   const [, setProfileImageFile] =
     useState<File | null>(null);
@@ -159,6 +169,35 @@ function PersonalArea() {
       );
     } finally {
       setUpdatingProfileName(false);
+    }
+  };
+
+  // Permanently delete the current user's account and related data
+  const deleteAccount = async () => {
+    try {
+      setDeletingAccount(true);
+      setError("");
+
+      await api.delete(
+        "/auth/account"
+      );
+
+      // Clear the local authentication session after successful deletion
+      logout();
+
+      window.location.href = "/";
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        "Failed to delete account."
+      );
+
+      setShowDeleteAccountConfirmation(
+        false
+      );
+    } finally {
+      setDeletingAccount(false);
     }
   };
 
@@ -333,13 +372,49 @@ function PersonalArea() {
             </Link>
           )}
 
-          <Link
-            to="/login"
-            className="btn-filled"
-            onClick={logout}
+          <div
+            style={{
+              position: "relative",
+              display: "flex",
+              alignItems: "center",
+            }}
           >
-            ↪ Logout
-          </Link>
+            <Link
+              to="/login"
+              className="btn-filled"
+              onClick={logout}
+            >
+              ↪ Logout
+            </Link>
+
+            {/* Allow every authenticated user to permanently delete their account */}
+            <button
+              type="button"
+              onClick={() =>
+                setShowDeleteAccountConfirmation(
+                  true
+                )
+              }
+              style={{
+                position: "absolute",
+                top: "calc(100% + 6px)",
+                left: "50%",
+                transform: "translateX(-50%)",
+                whiteSpace: "nowrap",
+                padding: "5px 9px",
+                background: "white",
+                color: "#dc2626",
+                border: "1px solid #dc2626",
+                borderRadius: "6px",
+                fontSize: "11px",
+                fontWeight: "600",
+                fontFamily: "inherit",
+                cursor: "pointer",
+              }}
+            >
+              Delete Account
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -811,6 +886,76 @@ function PersonalArea() {
                   className="confirmation-modal-delete"
                 >
                   Delete Request
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showDeleteAccountConfirmation && (
+          <div
+            className="confirmation-modal-overlay"
+            onClick={() => {
+              if (!deletingAccount) {
+                setShowDeleteAccountConfirmation(
+                  false
+                );
+              }
+            }}
+          >
+            <div
+              className="confirmation-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="delete-account-title"
+              onClick={(e) =>
+                e.stopPropagation()
+              }
+            >
+              <p
+                id="delete-account-title"
+                className="confirmation-modal-title"
+              >
+                Are you sure you want to
+                delete your account?
+              </p>
+
+              <p className="confirmation-modal-message">
+                This action is permanent.
+                Your account, tax requests
+                and uploaded documents will
+                be permanently deleted.
+              </p>
+
+              <div className="confirmation-modal-actions">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowDeleteAccountConfirmation(
+                      false
+                    )
+                  }
+                  disabled={
+                    deletingAccount
+                  }
+                  className="confirmation-modal-cancel"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  onClick={
+                    deleteAccount
+                  }
+                  disabled={
+                    deletingAccount
+                  }
+                  className="confirmation-modal-delete"
+                >
+                  {deletingAccount
+                    ? "Deleting..."
+                    : "Delete Account"}
                 </button>
               </div>
             </div>
