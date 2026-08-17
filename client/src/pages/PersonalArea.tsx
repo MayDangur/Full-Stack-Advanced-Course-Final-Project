@@ -54,6 +54,18 @@ function PersonalArea() {
   const [error, setError] =
     useState("");
 
+  // Controls whether the profile name is being edited
+  const [editingProfileName, setEditingProfileName] =
+    useState(false);
+
+  // Stores the profile name while it is being edited
+  const [profileName, setProfileName] =
+    useState("");
+
+  // Used while the profile name is being updated
+  const [updatingProfileName, setUpdatingProfileName] =
+    useState(false);
+
   // Stores the selected profile image before uploading
   const [, setProfileImageFile] =
     useState<File | null>(null);
@@ -106,6 +118,47 @@ function PersonalArea() {
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Update the current user's profile name
+  const updateProfileName = async () => {
+    const trimmedName = profileName.trim();
+
+    if (
+      trimmedName.length < 2 ||
+      trimmedName.length > 100
+    ) {
+      setError(
+        "Name must be between 2 and 100 characters."
+      );
+      return;
+    }
+
+    try {
+      setUpdatingProfileName(true);
+      setError("");
+
+      const { data } = await api.put(
+        "/auth/profile-name",
+        {
+          name: trimmedName,
+        }
+      );
+
+      // Update AuthContext so the new name appears immediately
+      updateUser(data.user);
+
+      setEditingProfileName(false);
+      setProfileName("");
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        "Failed to update profile name."
+      );
+    } finally {
+      setUpdatingProfileName(false);
     }
   };
 
@@ -341,6 +394,131 @@ function PersonalArea() {
               👤
             </div>
           )}
+
+          {/* Allow the user to update the profile name */}
+          <div
+            style={{
+              marginBottom: "14px",
+            }}
+          >
+            {editingProfileName ? (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                <input
+                  type="text"
+                  value={profileName}
+                  onChange={(event) =>
+                    setProfileName(
+                      event.target.value
+                    )
+                  }
+                  minLength={2}
+                  maxLength={100}
+                  disabled={
+                    updatingProfileName
+                  }
+                  aria-label="Profile name"
+                  style={{
+                    width: "220px",
+                    padding: "8px 10px",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: "7px",
+                    fontFamily: "inherit",
+                  }}
+                />
+
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "8px",
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={
+                      updateProfileName
+                    }
+                    disabled={
+                      updatingProfileName
+                    }
+                    style={{
+                      padding: "7px 14px",
+                      background: "#00bfa5",
+                      color: "white",
+                      border: "1px solid #00bfa5",
+                      borderRadius: "6px",
+                      cursor:
+                        updatingProfileName
+                          ? "wait"
+                          : "pointer",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    {updatingProfileName
+                      ? "Saving..."
+                      : "Save Name"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingProfileName(
+                        false
+                      );
+                      setProfileName("");
+                      setError("");
+                    }}
+                    disabled={
+                      updatingProfileName
+                    }
+                    style={{
+                      padding: "7px 14px",
+                      background: "white",
+                      color: "#1e293b",
+                      border: "1px solid #cbd5e1",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setProfileName(
+                    user?.name ?? ""
+                  );
+                  setEditingProfileName(
+                    true
+                  );
+                  setError("");
+                }}
+                style={{
+                  minWidth: "145px",
+                  padding: "7px 13px",
+                  background: "white",
+                  color: "#1e293b",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: "7px",
+                  fontSize: "12px",
+                  fontFamily: "inherit",
+                  cursor: "pointer",
+                }}
+              >
+                ✎ Edit Name
+              </button>
+            )}
+          </div>
 
           <div
             className="profile-image-actions"

@@ -102,7 +102,7 @@ export const register = async (
       return res.status(400).json({
         success: false,
         message: "This email is already registered.",
-     });
+      });
     }
 
     // Generate salt for password hashing
@@ -600,6 +600,46 @@ export const getMe = async (
     // Return the current authenticated user
     res.status(200).json({
       success: true,
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Update Profile Name
+export const updateProfileName = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { name } = req.body;
+
+    // Update only the current authenticated user's name
+    const user = await User.findByIdAndUpdate(
+      req.user?.userId,
+      {
+        name,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Return the updated user so the frontend can refresh AuthContext
+    res.status(200).json({
+      success: true,
+      message:
+        "Profile name updated successfully",
       user,
     });
   } catch (error) {
