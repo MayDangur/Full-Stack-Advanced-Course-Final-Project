@@ -29,6 +29,8 @@ https://taxwise-backend.onrender.com
 * Admin access to client request documents
 * Upload, view, download and delete documents
 * Upload, update and remove profile images
+* Update profile name
+* Delete user account and related data
 * Client-side React form validation
 * Server-side JOI validation
 * Loading and error states
@@ -147,6 +149,15 @@ Users can:
 
 Profile images are stored using Cloudinary and associated with the authenticated user.
 
+## Profile Management
+
+Authenticated users can:
+
+* Update their profile name
+* Delete their account
+
+Deleting an account permanently removes the user, their tax requests, associated document records, uploaded documents, and profile image.
+
 ## Validation and Security
 
 The application includes:
@@ -154,7 +165,7 @@ The application includes:
 * React form validation
 * Server-side JOI validation
 * JOI validation for tax requests
-* JOI validation for regular registration and login
+* JOI validation for registration, login, and profile name updates
 * Password hashing with bcrypt
 * JWT verification
 * Protected API routes
@@ -185,8 +196,10 @@ These features help reduce unnecessary loading and rendering.
 | POST   | `/api/auth/magic-login`             | Request a magic login link             | No             |
 | GET    | `/api/auth/magic-login/verify`      | Verify a magic login link and sign in  | No             |
 | GET    | `/api/auth/me`                      | Get the currently authenticated user   | Yes            |
+| PUT    | `/api/auth/profile-name`            | Update profile name                    | Yes            |
 | PUT    | `/api/auth/profile-image`           | Upload or update profile image         | Yes            |
 | DELETE | `/api/auth/profile-image`           | Remove profile image                   | Yes            |
+| DELETE | `/api/auth/account`                 | Delete user account and related data   | Yes            |
 | POST   | `/api/tax-requests`                 | Create a tax request                   | Yes            |
 | GET    | `/api/tax-requests`                 | Get the current user's tax requests    | Yes            |
 | GET    | `/api/tax-requests/:id`             | Get a specific tax request             | Yes            |
