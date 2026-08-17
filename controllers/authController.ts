@@ -664,6 +664,21 @@ export const updateProfileImage = async (
       });
     }
 
+    // Find the current user and keep the old profile image URL
+    const currentUser = await User.findById(
+      req.user?.userId
+    ).select("-password");
+
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const oldProfileImage =
+      currentUser.profileImage;
+
     // Convert the uploaded image buffer to a data URI for Cloudinary
     const imageData = `data:${
       req.file.mimetype
@@ -671,7 +686,7 @@ export const updateProfileImage = async (
       "base64"
     )}`;
 
-    // Upload the profile image to Cloudinary
+    // Upload the new profile image before removing the old one
     const uploadResult =
       await cloudinary.uploader.upload(
         imageData,
@@ -681,7 +696,7 @@ export const updateProfileImage = async (
         }
       );
 
-    // Save the Cloudinary image URL on the current user
+    // Save the new Cloudinary image URL on the current user
     const user = await User.findByIdAndUpdate(
       req.user?.userId,
       {
@@ -698,6 +713,36 @@ export const updateProfileImage = async (
         success: false,
         message: "User not found",
       });
+    }
+
+    // Remove the previous profile image only after the new one was saved
+    if (oldProfileImage) {
+      const urlParts =
+        oldProfileImage.split("/upload/");
+
+      if (urlParts.length === 2) {
+        const pathWithVersion =
+          urlParts[1];
+
+        const pathWithoutVersion =
+          pathWithVersion.replace(
+            /^v\d+\//,
+            ""
+          );
+
+        const publicId =
+          pathWithoutVersion.replace(
+            /\.[^/.]+$/,
+            ""
+          );
+
+        await cloudinary.uploader.destroy(
+          publicId,
+          {
+            resource_type: "image",
+          }
+        );
+      }
     }
 
     // Return the user with the new profile image
