@@ -390,6 +390,7 @@ function PersonalArea() {
             {/* Allow every authenticated user to permanently delete their account */}
             <button
               type="button"
+              className="delete-account-nav-button"
               onClick={() =>
                 setShowDeleteAccountConfirmation(
                   true
