@@ -87,7 +87,7 @@ function Admin() {
             [requestId]: response.data.data,
           })
         );
-      } catch (error) {
+      } catch {
         setDocumentsByRequest(
           (currentDocuments) => ({
             ...currentDocuments,
@@ -139,7 +139,7 @@ function Admin() {
             )
         )
       );
-    } catch (error) {
+    } catch {
       setError(
         "Unable to load client requests."
       );
@@ -242,7 +242,7 @@ function Admin() {
           )
         );
       }
-    } catch (error) {
+    } catch {
       setError(
         "Unable to update request status."
       );

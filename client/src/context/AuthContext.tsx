@@ -73,7 +73,7 @@ export function AuthProvider({
         );
 
         setUser(response.data.user);
-      } catch (error) {
+      } catch {
         // Clear the session if the saved token is no longer valid
         sessionStorage.removeItem("token");
         setToken(null);
